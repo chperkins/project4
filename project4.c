@@ -17,6 +17,43 @@ int h(int x);
 struct CPLIST* lookupCP(char Course[]);//lookup prerequisites for course
 
 
+///**************CR = Course, Room *************************//
+
+typedef struct CR *CRLIST;
+struct CR{
+	char* Course;
+	char* Room;
+	CRLIST next;
+};
+struct CRLIST{
+	struct CR* head;
+};
+struct CRLIST HASHTABLE_CR[B];
+struct CR* createCR(char* Course, char* Room){
+	struct CR* x = (struct CR*) malloc(sizeof(struct CR));
+	x->Course = Course;
+	x->Room = Room;
+	x->next = NULL;
+	return x;
+}
+void insertCR(struct CR* cr);
+void insertCR(struct CR* cr){
+	int hash = h(*cr->Course);//assume that each course only meets in one place
+	HASHTABLE_CR[hash].head = cr;
+}
+void deleteCR(struct CR* cr){
+	int hash = h(*cr->Course);
+	HASHTABLE_CR[hash].head = NULL;
+}
+struct CR* lookupCR(char* Course, char* Room){
+	if (*Course == '*'){
+		printf("*");
+		//lookup method needs to return specific rooms
+	}
+	int hash = h(*Course);
+	return HASHTABLE_CR[hash].head;
+	
+}
 ///**************CDH = Course, Day, Hour *************************//
 
 typedef struct CDH *CDHLIST;
@@ -245,6 +282,9 @@ struct CSG* lookupCSG(struct CSG* csg){//lookup with the tuple
 
 
 int main() {
+
+	struct CR* cr = createCR("CS201", "Ohm Auditorium");
+	//************ Test for CP table ******************//
 	/*struct CP* cp = createCP("CS101", "CS100");
 	insertCP(cp);
 	struct CP* cp2 = createCP("CS101", "CS102");
@@ -258,7 +298,10 @@ int main() {
 	deleteCP(cp2);
 	printf("%s\n", lookupCP("CS101")->head->next->Prerequisite);
 */
-	struct CDH* cdh = createCDH("CS171", "M", "9AM");
+
+
+	//************ Test for CDH table ******************//
+/*	struct CDH* cdh = createCDH("CS171", "M", "9AM");
 	insertCDH(cdh);
 	struct CDH* cdh2 = createCDH("CS171", "T", "17AM");
 	insertCDH(cdh2);
@@ -268,7 +311,7 @@ int main() {
 	printf("%s\n", test->next->Day);
 	deleteCDH(cdh2);
 	test = lookupCDH("CSC171")->head->next;
-	printf("%s\n", test->Day);
+	printf("%s\n", test->Day);*/
 
 	return 0;
 
