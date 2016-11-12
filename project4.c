@@ -15,6 +15,8 @@ void deleteCSG(struct CSG* csg);
 void insert(struct TUPLE* tuple);
 void deleteCP(struct CP* cp);
 int h(int x);
+struct CPLIST* lookupCP(char Course[]);//lookup prerequisites for course
+
 
 
 ///**************CP = Course, Prerequisites *************************//
@@ -42,16 +44,24 @@ void insertCP(struct CP* cp){
 	if (HASHTABLE_CP[hash].head != NULL){//if there's a collision
 		struct CP* new_CP = HASHTABLE_CP[hash].head;
 		while(new_CP != NULL){//go through the list to find the next empty bucket
+
 			new_CP = HASHTABLE_CP[hash].head->next;
+			printf("New_CP's course is %s\n", new_CP->Course);
 			if (new_CP == NULL){
-				new_CP->next = cp;
+				new_CP = cp;
+				HASHTABLE_CP[hash].head->next = new_CP;
+				new_CP->next = NULL;
+				break;
 			}
 		}
-		//int new_cp_hash = h(new_CP)
 	}
 	else{
 		HASHTABLE_CP[hash].head = cp;
 	}
+}
+struct CPLIST* lookupCP(char Course[]){//lookup prerequisites for course
+	int hash = h(*Course );
+	return &HASHTABLE_CP[hash];
 }
 void deleteCP(struct CP* cp){
 	int hash = h(*cp->Course );
@@ -144,8 +154,11 @@ struct CSG* lookupCSG(struct CSG* csg){//lookup with the tuple
 int main() {
 	struct CP* cp = createCP("CS101", "CS100");
 	insertCP(cp);
+	struct CP* cp2 = createCP("CS101", "CS102");
+	insertCP(cp2);
 	int hash = h(*cp->Course );
-	printf("%d\n", hash);
+
+	printf("%s\n", lookupCP("CS101")->head->next->Prerequisite);
 	return 0;
 
 }
