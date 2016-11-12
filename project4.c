@@ -278,6 +278,7 @@ void file_make() {
 			new_CDH = new_CDH->next;
 		}
 	}
+	fprintf(database,"\n");
    	fclose(database);
 }
 
