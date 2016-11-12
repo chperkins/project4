@@ -17,7 +17,7 @@ int h(int x);
 struct CPLIST* lookupCP(char Course[]);//lookup prerequisites for course
 
 
-///**************CR = Course, Room *************************//
+//----------------CR = Course, Room //----------------
 
 typedef struct CR *CRLIST;
 struct CR{
@@ -54,7 +54,7 @@ struct CR* lookupCR(char* Course, char* Room){
 	return HASHTABLE_CR[hash].head;
 	
 }
-///**************CDH = Course, Day, Hour *************************//
+//----------------CDH = Course, Day, Hour //----------------
 
 typedef struct CDH *CDHLIST;
 struct CDH{
@@ -125,7 +125,7 @@ void deleteCDH(struct CDH* cdh){
 	}
 
 }
-///**************CP = Course, Prerequisites *************************//
+//----------------CP = Course, Prerequisites //----------------
 
 typedef struct CP *CPLIST;
 struct CP{//Course, Prerequisite
@@ -194,7 +194,7 @@ void deleteCP(struct CP* cp){
 	}
 }
 
-///**************TUPLE = SNAP *************************//
+//----------------TUPLE = SNAP //----------------
 typedef struct TUPLE *TUPLELIST;//list of tuples
 struct TUPLE {//TUPLE = SNAP
 	int StudentId;
@@ -241,9 +241,9 @@ struct TUPLE* lookupSID(int StudentId){//for snap
 }
 /*struct TUPLE* lookupName(char Name[]){
 }*/
-//****************************************///
+//----------------
 					//CSGs
-//***************************************///
+//----------------
 typedef struct CSGLIST *CSGLIST;
 struct CSG {
 	char Course[5];
@@ -284,7 +284,7 @@ struct CSG* lookupCSG(struct CSG* csg){//lookup with the tuple
 int main() {
 
 	struct CR* cr = createCR("CS201", "Ohm Auditorium");
-	//************ Test for CP table ******************//
+	//---------------- Test for CP table -----------------//
 	/*struct CP* cp = createCP("CS101", "CS100");
 	insertCP(cp);
 	struct CP* cp2 = createCP("CS101", "CS102");
@@ -300,7 +300,7 @@ int main() {
 */
 
 
-	//************ Test for CDH table ******************//
+	//---------------- Test for CDH table -----------------//
 /*	struct CDH* cdh = createCDH("CS171", "M", "9AM");
 	insertCDH(cdh);
 	struct CDH* cdh2 = createCDH("CS171", "T", "17AM");
