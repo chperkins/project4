@@ -21,20 +21,20 @@ struct CPLIST* lookupCP(char Course[]);//lookup prerequisites for course
 
 typedef struct CDH *CDHLIST;
 struct CDH{
-	char Course[5];
-	char Day[2];
-	char Hour[4];
+	char* Course;
+	char* Day;
+	char* Hour;
 	CDHLIST next;
 };
 struct CDHLIST{
 	struct CDH* head;
 };
 struct CDHLIST HASHTABLE_CDH[B];
-struct CDH* createCDH(char Course[], char Day[], char Hour[]){
+struct CDH* createCDH(char* Course, char* Day, char* Hour) {
 	struct CDH* x = (struct CDH*) malloc(sizeof(struct CDH));
-	strcpy(x->Course, Course);
-	strcpy(x->Day, Day);
-	strcpy(x->Hour, Hour);
+	x->Course=Course;
+	x->Day=Day;
+	x->Hour=Hour;
 	x->next = NULL;
 	return x;
 }
@@ -120,8 +120,8 @@ void deleteCDH(struct CDH* cdh){
 
 typedef struct CP *CPLIST;
 struct CP{//Course, Prerequisite
-	char Course[5];
-	char Prerequisite[5];
+	char* Course;
+	char* Prerequisite;
 	CPLIST next;
 };
 struct CPLIST{
@@ -129,10 +129,10 @@ struct CPLIST{
 };
 struct CPLIST HASHTABLE_CP[B];
 
-struct CP* createCP(char Course[], char Prerequisite[]){
+struct CP* createCP(char* Course, char* Prerequisite){
 	struct CP* x = (struct CP*) malloc(sizeof(struct CP));
-	strcpy(x->Course, Course);
-	strcpy(x->Prerequisite, Prerequisite);
+	x->Course=Course;
+	x->Prerequisite=Prerequisite;
 	x->next = NULL;
 	return x;
 }
@@ -184,9 +184,9 @@ void deleteCP(struct CP* cp){
 typedef struct TUPLE *TUPLELIST;//list of tuples
 struct TUPLE {//TUPLE = SNAP
 	int StudentId;
-	char Name[30];
-	char Address[50];
-	char Phone[8];
+	char* Name;
+	char* Address;
+	char* Phone;
 	TUPLELIST next;
 };
 struct TUPLELIST{
@@ -198,12 +198,12 @@ struct TUPLELIST HASHTABLE[B];
 int h(int x) {
 	return x % B;
 }
-struct TUPLE* createTUPLE(int StudentId, char Name[], char Address[], char Phone[]){
+struct TUPLE* createTUPLE(int StudentId, char* Name, char* Address, char* Phone){
 	struct TUPLE* x = (struct TUPLE*) malloc(sizeof(struct TUPLE));
-	strcpy(x->Name, Name);
-	strcpy(x->Address, Address);
+	x->Name=Name;
+	x->Address=Address;
 	x->StudentId = StudentId;
-	strcpy(x->Phone, Phone);
+	x->Phone=Phone;
 	x->next = NULL;
 	return x;
 }
@@ -232,9 +232,9 @@ struct TUPLE* lookupSID(int StudentId){//for snap
 //***************************************///
 typedef struct CSGLIST *CSGLIST;
 struct CSG {
-	char Course[5];
+	char* Course;
 	int StudentId;
-	char Grade[2];
+	char* Grade;
 	CSGLIST next;
 };
 struct CSGLIST{
@@ -242,10 +242,10 @@ struct CSGLIST{
 };
 struct CSGLIST HASHTABLE_CSG[B];
 
-struct CSG* createCSG(char Course[], int StudentId, char Grade[]){
+struct CSG* createCSG(char* Course, int StudentId, char* Grade){
 	struct CSG* x = (struct CSG*) malloc(sizeof(struct CSG));
-	strcpy(x->Course, Course);
-	strcpy(x->Grade, Grade);
+	x->Course=Course;
+	x->Grade=Grade;
 	x->StudentId = StudentId;
 	x->next = NULL;
 	return x;
@@ -266,8 +266,27 @@ struct CSG* lookupCSG(struct CSG* csg){//lookup with the tuple
 	return HASHTABLE_CSG[key].head;
 }
 
+void file_make();
+void file_make() {
+	FILE *database;
+	database = fopen("program.txt", "w");
+	fprintf(database, "Course,Day,Hour\n");
+	for(int i=0; i<B; i++) {
+		struct CDH* new_CDH = HASHTABLE_CDH[i].head;
+		while(new_CDH != NULL) {
+			fprintf(database, "%s,%s,%s\n", new_CDH->Course, new_CDH->Day, new_CDH->Hour);
+			new_CDH = new_CDH->next;
+		}
+	}
+   	fclose(database);
+}
+
 
 int main() {
+	for(int i=0; i<B; i++) {
+		HASHTABLE_CDH[i].head=NULL;
+	}
+	
 	struct CP* cp = createCP("CS101", "CS100");
 	insertCP(cp);
 	struct CP* cp2 = createCP("CS101", "CS102");
@@ -286,7 +305,7 @@ int main() {
 	insertCDH(cdh3);
 	struct CDH* test = lookupCDH("CSC171")->head->next;
 	printf("%s\n", test->next->Day);
-	printf("%p\n", HASHTABLE_CDH[67].head->next);
+	file_make();
 
 	return 0;
 

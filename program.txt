@@ -1,0 +1,4 @@
+Course,Day,Hour
+CS171,M,9AM
+CS171,T,17AM
+CS171,W,17AM
