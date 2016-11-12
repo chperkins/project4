@@ -5,10 +5,64 @@
 #include <stdlib.h>
 
 #define B 1009
+struct CP* createCP(char Course[], char Prerequisite[]);
+struct TUPLE* createTUPLE(int StudentId, char Name[], char Address[], char Phone[]);
+struct CSG* createCSG(char Course[], int StudentId, char Grade[]);
+void insertCSG(struct CSG* csg);
+struct TUPLE* lookup(struct TUPLE* tuple);
+struct CSG* lookupCSG(struct CSG* csg);
+void deleteCSG(struct CSG* csg);
+void insert(struct TUPLE* tuple);
+void deleteCP(struct CP* cp);
+int h(int x);
 
+
+///**************CP = Course, Prerequisites *************************//
+
+typedef struct CP *CPLIST;
+struct CP{//Course, Prerequisite
+	char Course[5];
+	char Prerequisite[5];
+	CPLIST next;
+};
+struct CPLIST{
+	struct CP* head;
+};
+struct CPLIST HASHTABLE_CP[B];
+
+struct CP* createCP(char Course[], char Prerequisite[]){
+	struct CP* x = (struct CP*) malloc(sizeof(struct CP));
+	strcpy(x->Course, Course);
+	strcpy(x->Prerequisite, Prerequisite);
+	x->next = NULL;
+	return x;
+}
+void insertCP(struct CP* cp){
+	int hash = h(*cp->Course );
+	if (HASHTABLE_CP[hash].head != NULL){//if there's a collision
+		struct CP* new_CP = HASHTABLE_CP[hash].head;
+		while(new_CP != NULL){//go through the list to find the next empty bucket
+			new_CP = HASHTABLE_CP[hash].head->next;
+			if (new_CP == NULL){
+				new_CP->next = cp;
+			}
+		}
+		//int new_cp_hash = h(new_CP)
+	}
+	else{
+		HASHTABLE_CP[hash].head = cp;
+	}
+}
+void deleteCP(struct CP* cp){
+	int hash = h(*cp->Course );
+	if (HASHTABLE_CP[hash].head != NULL){
+		HASHTABLE_CP[hash].head = NULL;
+	}
+}
+
+///**************TUPLE = SNAP *************************//
 typedef struct TUPLE *TUPLELIST;//list of tuples
-
-struct TUPLE {
+struct TUPLE {//TUPLE = SNAP
 	int StudentId;
 	char Name[30];
 	char Address[50];
@@ -18,10 +72,9 @@ struct TUPLE {
 struct TUPLELIST{
 	struct TUPLE* head;
 };
-struct TUPLE* createTUPLE(int StudentId, char Name[], char Address[], char Phone[]);
 struct TUPLELIST HASHTABLE[B];
-void insert(struct TUPLE* tuple);
-int h(int x);
+
+
 int h(int x) {
 	return x % B;
 }
@@ -34,43 +87,65 @@ struct TUPLE* createTUPLE(int StudentId, char Name[], char Address[], char Phone
 	x->next = NULL;
 	return x;
 }
-void insert(struct TUPLE* tuple){
+void insertSNAP(struct TUPLE* tuple){
 	int hash = h(tuple->StudentId);
-	//printf("%d\n\n", hash);
-	if (HASHTABLE[hash].head == NULL){
-		HASHTABLE[hash].head = tuple;
-	}
-	else{
-		HASHTABLE[hash].head = tuple;
-	}
+	HASHTABLE[hash].head = tuple;//assume there are no collisions because student ids are unique
 }
-void delete(struct TUPLE* tuple){
+void deleteSNAP(struct TUPLE* tuple){
 	int hash = h(tuple->StudentId);
 	if (HASHTABLE[hash].head != NULL){
 		HASHTABLE[hash].head = NULL;
 	}
 }
-struct TUPLE* lookup(struct TUPLE* tuple);
 struct TUPLE* lookup(struct TUPLE* tuple){//lookup with the tuple
 	int key = h(tuple->StudentId);
 	return HASHTABLE[key].head;
 }
-int main() {
-	struct TUPLE* x = createTUPLE(000, "Lilian", "1414 woodoak", "213555");
-	printf("%s\n", x->Name);
-	insert(x);
-	printf("%s\n", HASHTABLE[0].head->Phone);
-	struct TUPLE* m = createTUPLE(02, "lil", "7 afewf", "3335");
-	insert(m);
-	struct TUPLE* n = createTUPLE(3, "hay", "93'2", "2423");
-	insert(n);
-	int m_hash = h(m->StudentId);
-	printf("%s\n", HASHTABLE[m_hash].head->Phone);
-	delete(m);
-	insert(m);
-	printf("%p\n", HASHTABLE[m_hash].head);
-	printf("%s\n", lookup(x)->Name);
+//****************************************///
+					//CSGs
+//***************************************///
+typedef struct CSGLIST *CSGLIST;
+struct CSG {
+	char Course[5];
+	int StudentId;
+	char Grade[2];
+	CSGLIST next;
+};
+struct CSGLIST{
+	struct CSG* head;
+};
+struct CSGLIST HASHTABLE_CSG[B];
 
+struct CSG* createCSG(char Course[], int StudentId, char Grade[]){
+	struct CSG* x = (struct CSG*) malloc(sizeof(struct CSG));
+	strcpy(x->Course, Course);
+	strcpy(x->Grade, Grade);
+	x->StudentId = StudentId;
+	x->next = NULL;
+	return x;
+}
+
+void insertCSG(struct CSG* csg){//use STUDENT ID as the hashtable
+	int hash = h(csg->StudentId);
+	HASHTABLE_CSG[hash].head = csg;
+}
+void deleteCSG(struct CSG* csg){
+	int hash = h(csg->StudentId);
+	if (HASHTABLE_CSG[hash].head != NULL){
+		HASHTABLE_CSG[hash].head = NULL;
+	}
+}
+struct CSG* lookupCSG(struct CSG* csg){//lookup with the tuple
+	int key = h(csg->StudentId);
+	return HASHTABLE_CSG[key].head;
+}
+
+
+int main() {
+	struct CP* cp = createCP("CS101", "CS100");
+	insertCP(cp);
+	int hash = h(*cp->Course );
+	printf("%d\n", hash);
 	return 0;
 
 }
