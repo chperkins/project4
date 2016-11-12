@@ -41,49 +41,16 @@ struct CDH* createCDH(char Course[], char Day[], char Hour[]){
 }
 void insertCDH(struct CDH* cdh);
 void insertCDH(struct CDH* cdh){
-	/*int hash = h(*cdh->Course);
-	printf("Inserting cdh into %d\n", hash);
-	if (HASHTABLE_CDH[hash].head != NULL){
-		printf("collision\n\n");
-		struct CDH* new_CDH = HASHTABLE_CDH[hash].head;
-		//new_CDH = HASHTABLE_CDH[hash].head->next;
-
-		while(new_CDH != NULL){//go through the list to find the next empty bucket
-			new_CDH = new_CDH->next;
-			printf("New_CDH's course is %s\n", new_CDH->Course);
-			if (new_CDH== NULL){//this is the empty bucket
-				printf("Pointer is %p\n", new_CDH);
-				new_CDH = cdh;
-				printf("Now, the pointer is %p\n", new_CDH);
-				printf("New course is %s\n", new_CDH->Course);
-				printf("New time is %s\n", new_CDH->Hour);
-				printf("pointer to next is %p\n", new_CDH->next);
-				//HASHTABLE_CDH[hash].head->next = new_CDH;
-				new_CDH->next = NULL;
-				break;
-			}
-		}
-	}
-	else{
-		HASHTABLE_CDH[hash].head = cdh;
-	}*/
 	int hash = h(*cdh->Course );
 	if (HASHTABLE_CDH[hash].head != NULL){//if there's a collision
 		struct CDH* new_CDH = HASHTABLE_CDH[hash].head;
-	//int i = 0;
 		while(new_CDH != NULL){//go through the list to find the next empty bucket
-			//printf("old cp's prerequisite is %s\n", new_CP->Prerequisite);
-			//i++;
-			//printf("\ni is %d\n", i);
+			
 			struct CDH* prev = new_CDH;
 			new_CDH = new_CDH->next;
-			//printf("New_CP's course is %s\n", new_CP->Course);
 			if (new_CDH == NULL){
-				
 				new_CDH = cdh;
 				prev->next = new_CDH;
-				//printf("New_CP's course is %s\n", new_CP->Course);
-
 				new_CDH->next = NULL;
 				break;
 			}
