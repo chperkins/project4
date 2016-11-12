@@ -277,7 +277,7 @@ int main() {
 
 	int hash = h(*cp->Course );
 
-	printf("%s\n", lookupCP("CS101")->head->next);
+	printf("%s\n", lookupCP("CS101")->head->next->Prerequisite);
 	struct CDH* cdh = createCDH("CS171", "M", "9AM");
 	insertCDH(cdh);
 	struct CDH* cdh2 = createCDH("CS171", "T", "17AM");
