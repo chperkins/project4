@@ -18,7 +18,81 @@ int h(int x);
 struct CPLIST* lookupCP(char Course[]);//lookup prerequisites for course
 
 
+///**************CDH = Course, Day, Hour *************************//
 
+typedef struct CDH *CDHLIST;
+struct CDH{
+	char Course[5];
+	char Day[2];
+	char Hour[4];
+	CDHLIST next;
+};
+struct CDHLIST{
+	struct CDH* head;
+};
+struct CDHLIST HASHTABLE_CDH[B];
+struct CDH* createCDH(char Course[], char Day[], char Hour[]){
+	struct CDH* x = (struct CDH*) malloc(sizeof(struct CDH));
+	strcpy(x->Course, Course);
+	strcpy(x->Day, Day);
+	strcpy(x->Hour, Hour);
+	x->next = NULL;
+	return x;
+}
+void insertCDH(struct CDH* cdh);
+void insertCDH(struct CDH* cdh){
+	int hash = h(*cdh->Course);
+	printf("Inserting cdh into %d\n", hash);
+	if (HASHTABLE_CDH[hash].head != NULL){
+		printf("collision\n\n");
+		struct CDH* new_CDH = HASHTABLE_CDH[hash].head;
+		//new_CDH = HASHTABLE_CDH[hash].head->next;
+
+		while(new_CDH != NULL){//go through the list to find the next empty bucket
+			new_CDH = new_CDH->next;
+			printf("New_CDH's course is %s\n", new_CDH->Course);
+			if (new_CDH== NULL){//this is the empty bucket
+				printf("Pointer is %p\n", new_CDH);
+				new_CDH = cdh;
+				printf("Now, the pointer is %p\n", new_CDH);
+				printf("New course is %s\n", new_CDH->Course);
+				printf("New time is %s\n", new_CDH->Hour);
+				printf("pointer to next is %p\n", new_CDH->next);
+				//HASHTABLE_CDH[hash].head->next = new_CDH;
+				new_CDH->next = NULL;
+				break;
+			}
+		}
+	}
+	else{
+		HASHTABLE_CDH[hash].head = cdh;
+	}
+}
+struct CDHLIST* lookupCDH(char Course[]);
+struct CDHLIST* lookupCDH(char Course[]){
+	int hash = h(*Course);
+	printf("Hash is %d\n", hash);
+	return &HASHTABLE_CDH[hash];
+}
+void deleteCDH(struct CDH* cdh){
+	int hash = h(*cdh->Course);
+	struct CDH* temp_cdh = HASHTABLE_CDH[hash].head;
+	if (*cdh->Day == *temp_cdh->Day && *cdh->Hour == *temp_cdh->Hour){
+		//HASHTABLE_CDH[hash].head = NULL;
+		HASHTABLE_CDH[hash].head = HASHTABLE_CDH[hash].head->next;
+	}
+	else{
+		while(temp_cdh != NULL){
+			temp_cdh = temp_cdh->next;
+			if (*temp_cdh->Day == *cdh->Day && *temp_cdh->Hour == *cdh->Hour){
+				///HASHTABLE_CDH[]
+				temp_cdh = NULL;
+				break;
+			}
+		}
+	}
+
+}
 ///**************CP = Course, Prerequisites *************************//
 
 typedef struct CP *CPLIST;
@@ -111,6 +185,13 @@ struct TUPLE* lookup(struct TUPLE* tuple){//lookup with the tuple
 	int key = h(tuple->StudentId);
 	return HASHTABLE[key].head;
 }
+struct TUPLE* lookupSID(int StudentId){//for snap
+	int key = h(StudentId);
+	return HASHTABLE[key].head;
+}
+/*struct TUPLE* lookupName(char Name[]){
+
+}*/
 //****************************************///
 					//CSGs
 //***************************************///
@@ -159,6 +240,16 @@ int main() {
 	int hash = h(*cp->Course );
 
 	printf("%s\n", lookupCP("CS101")->head->next->Prerequisite);
+	struct CDH* cdh = createCDH("CS171", "M", "9AM");
+	insertCDH(cdh);
+	struct CDH* cdh2 = createCDH("CS171", "T", "17AM");
+	insertCDH(cdh2);
+		struct CDH* cdh3 = createCDH("CS171", "W", "17AM");
+	insertCDH(cdh3);
+	struct CDH* test = lookupCDH("CSC171")->head->next;
+	//printf("%s\n", test->Day);
+	printf("%p\n", HASHTABLE_CDH[67].head->next);
+
 	return 0;
 
 }
