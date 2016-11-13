@@ -60,18 +60,17 @@ struct CRLIST* lookupCR(char* Course, char* Room){
 		crlist->head = NULL;
 		struct CR* temp;
 		for(int i=0; i<B; i++) {
-			struct CR* temp1 = HASHTABLE_CR.head;
-			struct CR* temp2;
-			struct CR* temp3;
+			struct CR* temp1 = HASHTABLE_CR[i].head;
 			while(temp1!=NULL) {
 				if(temp1->Room == Room) {
-					temp3 = temp1;
-					temp3 = crlist.head;
-					crlist.head = temp3;
-					temp1 = temp1.next;
+					struct CR* temp2 = createCR(temp1->Course, temp1->Room);
+					temp2->next = crlist->head;
+					crlist->head = temp2;
 				}
+				temp1=temp1->next;
 			}
 		}
+		return crlist;
 	}
 /*	if (*Course == '*' && *Room != '*'){
 		struct CR* temp = createCR("not", "not");
@@ -105,12 +104,12 @@ struct CRLIST* lookupCR(char* Course, char* Room){
 		free(crlist);
 		return templist;
 		//lookup method needs to return specific rooms
-	}
+	}*/
 	else{
 		int hash = h(*Course);
 		return &HASHTABLE_CR[hash];
 	}
-	*/
+	
 	
 }
 void deleteCR(struct CR* cr){
