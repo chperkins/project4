@@ -281,7 +281,42 @@ void file_make() {
 	fprintf(database,"\n");
    	fclose(database);
 }
+//struct cDatabase {
+//	CDHLIST HASHTABLE_CDH[B];
+//};
 
+void file_read();
+void file_read() {
+
+	FILE* database = fopen("program.txt", "r");
+	char* tempstring = malloc(100);
+	while(fgets(tempstring, 1000, database)) {
+		char* cdh3[3];
+		int i=0;
+
+		//printf("%d: tempstring\n ", strncmp(tempstring,"Course,Day,Hour\n", 20)==0);
+		if(strncmp(tempstring,"Course,Day,Hour\n", 20)!=0 &&
+			strncmp(tempstring,"\n",20)!=0) {
+			//printf("here\n");
+			char *stok = strtok(tempstring,",\n");
+			while(stok) {
+				cdh3[i] = stok;
+				//printf("token %s \n", cdh3[i]);
+				stok = strtok(NULL, ",\n");
+				i++;
+			}
+			struct CDH* cdh_new = createCDH(cdh3[0], cdh3[1], cdh3[2]);
+			printf("%s,%s,%s\n", cdh_new->Course,cdh_new->Day,cdh_new->Hour);
+			printf("%s\n", cdh_new->Hour);
+			insertCDH(cdh_new);
+			printf("\n\n NOW NOW %s \n", HASHTABLE_CDH[h(*cdh3[0])].head->Course);
+		}
+	}
+	//printf("ok1 \n");
+   	//printf("ok \n");
+   	fclose(database);
+
+}
 
 int main() {
 	for(int i=0; i<B; i++) {
@@ -298,15 +333,18 @@ int main() {
 	int hash = h(*cp->Course );
 
 	printf("%s\n", lookupCP("CS101")->head->next->Prerequisite);
-	struct CDH* cdh = createCDH("CS171", "M", "9AM");
-	insertCDH(cdh);
-	struct CDH* cdh2 = createCDH("CS171", "T", "17AM");
-	insertCDH(cdh2);
-		struct CDH* cdh3 = createCDH("CS171", "W", "17AM");
-	insertCDH(cdh3);
-	struct CDH* test = lookupCDH("CSC171")->head->next;
-	printf("%s\n", test->next->Day);
-	file_make();
+	//struct CDH* cdh = createCDH("CS171", "M", "9AM");
+	//insertCDH(cdh);
+	//struct CDH* cdh2 = createCDH("CS172", "T", "17AM");
+	//insertCDH(cdh2);
+	//	struct CDH* cdh3 = createCDH("CS173", "W", "17AM");
+	//insertCDH(cdh3);
+	//struct CDH* test = lookupCDH("CSC171")->head->next;
+	//printf("%s\n", test->next->Day);
+	//file_make();
+	file_read();
+	//file_make();
+	//file_make();
 
 	return 0;
 
