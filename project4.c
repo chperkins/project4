@@ -23,9 +23,76 @@ int hc(char* x) {
 		l+=x[i];
 	}
 	return l%B;
+
+
 }
 
 
+//----------------CR = Course, Room //----------------
+
+typedef struct CR *CRLIST;
+struct CR{
+	char* Course;
+	char* Room;
+	CRLIST next;
+};
+struct CRLIST{
+	struct CR* head;
+};
+struct CRLIST HASHTABLE_CR[B];
+
+
+struct CR* createCR(char* Course, char* Room){
+	struct CR* x = (struct CR*) malloc(sizeof(struct CR));
+	x->Course = Course;
+	x->Room = Room;
+	x->next = NULL;
+	return x;
+}
+
+void insertCR(struct CR* cr){
+	int hash = hc(cr->Course);//assume that each course only meets in one place
+	printf("hash is %d\n\n", hash);
+	HASHTABLE_CR[hash].head = cr;
+}
+
+
+struct CRLIST* lookupCR(char* Course, char* Room);
+struct CRLIST* lookupCR(char* Course, char* Room){
+	struct CRLIST* crlist = (struct CRLIST*) malloc(sizeof(struct CRLIST));
+
+	if(*Course == '*' && *Room != '*') {
+		crlist->head = NULL;
+		struct CR* temp;
+		for(int i=0; i<B; i++) {
+			struct CR* temp1 = HASHTABLE_CR[i].head;
+			while(temp1!=NULL) {
+				if(temp1->Room == Room) {
+					struct CR* temp2 = createCR(temp1->Course, temp1->Room);
+					temp2->next = crlist->head;
+					crlist->head = temp2;
+				}
+				temp1=temp1->next;
+			}
+		}
+		return crlist;
+	}
+
+	else{
+		int hash = h(*Course);
+		return &HASHTABLE_CR[hash];
+	}
+	
+	
+}
+
+void deleteCR(struct CR* cr){
+	int hash = hc(cr->Course);
+	printf("%s deleting\n\n", cr->Course);
+	HASHTABLE_CR[hash].head = NULL;
+	//printf("\n\nhakfhiaekgjaefij %p\n\n",HASHTABLE_CR[hash].head);
+	//printf("\n %s \n",lookupCR("CS202", "*")->head);
+}
 
 ///**************CDH = Course, Day, Hour *************************//
 
@@ -40,6 +107,7 @@ struct CDHLIST{
 	struct CDH* head;
 };
 struct CDHLIST HASHTABLE_CDH[B];
+
 struct CDH* createCDH(char* Course, char* Day, char* Hour) {
 	struct CDH* x = (struct CDH*) malloc(sizeof(struct CDH));
 	x->Course=Course;
@@ -66,64 +134,9 @@ void insertCDH(struct CDH* cdh){
 	else {
 		HASHTABLE_CDH[hash].head = cdh;
 	}
-
-
-
-
-
-	/*int hash = h(*cdh->Course);
-	printf("Inserting cdh into %d\n", hash);
-	if (HASHTABLE_CDH[hash].head != NULL){
-		printf("collision\n\n");
-		struct CDH* new_CDH = HASHTABLE_CDH[hash].head;
-		//new_CDH = HASHTABLE_CDH[hash].head->next;
-		while(new_CDH != NULL){//go through the list to find the next empty bucket
-			new_CDH = new_CDH->next;
-			printf("New_CDH's course is %s\n", new_CDH->Course);
-			if (new_CDH== NULL){//this is the empty bucket
-				printf("Pointer is %p\n", new_CDH);
-				new_CDH = cdh;
-				printf("Now, the pointer is %p\n", new_CDH);
-				printf("New course is %s\n", new_CDH->Course);
-				printf("New time is %s\n", new_CDH->Hour);
-				printf("pointer to next is %p\n", new_CDH->next);
-				//HASHTABLE_CDH[hash].head->next = new_CDH;
-				new_CDH->next = NULL;
-				break;
-			}
-		}
-	}
-	else{
-		HASHTABLE_CDH[hash].head = cdh;
-	}*/
-	/*int hash = hc(cdh->Course );
-	printf("cdh head %s %d \n", cdh->Course, hash);
-	if (HASHTABLE_CDH[hash].head != NULL){//if there's a collision
-		printf("going here \n");
-		struct CDH* new_CDH = HASHTABLE_CDH[hash].head;
-	//int i = 0;
-		while(new_CDH != NULL){//go through the list to find the next empty bucket
-			//printf("old cp's prerequisite is %s\n", new_CP->Prerequisite);
-			//i++;
-			//printf("\ni is %d\n", i);
-			printf("here now woah %p %s afwe \n", new_CDH->next, new_CDH->Course);
-			new_CDH = new_CDH->next;
-			printf("%d what is it \n", new_CDH!=NULL);
-			//printf("New_CP's course is %s\n", new_CP->Course);
-		}
-		printf("ppppp \n");
-		new_CDH = cdh;
-		printf("qqqqq\n");
-		//printf("New_CP's course is %s\n", new_CP->Course);
-	}
-	else{
-		printf("here\n");
-		HASHTABLE_CDH[hash].head = cdh;
-	}
-	printf("lllll\n");*/
 }
 struct CDHLIST* lookupCDH(char Course[]);
-struct CDHLIST* lookupCDH(char Course[]){
+struct CDHLIST* lookupCDH(char Course[]) {
 	int hash = h(*Course);
 	printf("Hash is %d\n", hash);
 	return &HASHTABLE_CDH[hash];
@@ -168,29 +181,18 @@ struct CP* createCP(char* Course, char* Prerequisite){
 	return x;
 }
 void insertCP(struct CP* cp){
-	int hash = h(*cp->Course );
-	if (HASHTABLE_CP[hash].head != NULL){//if there's a collision
-		struct CP* new_CP = HASHTABLE_CP[hash].head;
-	int i = 0;
-		while(new_CP != NULL){//go through the list to find the next empty bucket
-			//printf("old cp's prerequisite is %s\n", new_CP->Prerequisite);
-			i++;
-			printf("\ni is %d\n", i);
-			struct CP* prev = new_CP;
-			new_CP = new_CP->next;
-			//printf("New_CP's course is %s\n", new_CP->Course);
-			if (new_CP == NULL){
-				
-				new_CP = cp;
-				prev->next = new_CP;
-				//printf("New_CP's course is %s\n", new_CP->Course);
+	int hash = hc(cp->Course);
 
-				new_CP->next = NULL;
-				break;
-			}
-		}
+	if (HASHTABLE_CP[hash].head != NULL) {
+
+		struct CP* temp_CP = HASHTABLE_CP[hash].head;
+		HASHTABLE_CP[hash].head = cp;
+		cp->next = temp_CP;
+		//printf("%s 12 \n", HASHTABLE_CDH[hash].head->Day);
+		//printf("%s 123 \n", HASHTABLE_CDH[hash].head->next->Day);
 	}
-	else{
+
+	else {
 		HASHTABLE_CP[hash].head = cp;
 	}
 }
@@ -258,9 +260,9 @@ struct TUPLE* lookupSID(int StudentId){//for snap
 }
 /*struct TUPLE* lookupName(char Name[]){
 }*/
-//****************************************///
+//----------------------///
 					//CSGs
-//***************************************///
+//----------------------///
 typedef struct CSGLIST *CSGLIST;
 struct CSG {
 	char* Course;
@@ -312,6 +314,11 @@ void file_make() {
 	fprintf(database,"\n");
    	fclose(database);
 }
+
+
+
+
+
 //struct cDatabase {
 //	CDHLIST HASHTABLE_CDH[B];
 //};
