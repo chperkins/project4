@@ -50,31 +50,24 @@ void insertCR(struct CR* cr){
 	HASHTABLE_CR[hash].head = cr;
 
 }
-void deleteCR(struct CR* cr){
-	int hash = h(*cr->Course);
-	HASHTABLE_CR[hash].head = NULL;
-}
+
 
 struct CRLIST* lookupCR(char* Course, char* Room);
 struct CRLIST* lookupCR(char* Course, char* Room){
-	printf("Loookingup %s\n", Course);
 	struct CRLIST* crlist = (struct CRLIST*) malloc(sizeof(struct CRLIST));
 	if (*Course == '*' && *Room != '*'){
-		printf("course is *\n\n");
 		struct CR* temp = createCR("not", "not");
-		crlist->head = temp;
 
+		crlist->head = temp;
+		printf("\n\n woooooahh %s \n\n", crlist->head->Course);
 		printf("*\n");
 		for (int i=0; i<B; i++){
 			//printf("*");
 			if (HASHTABLE_CR[i].head != NULL && HASHTABLE_CR[i].head->Room == Room){
 				if (strcmp(temp->Room, "not") == 0) {
-					printf("nooooooot\n");
 					temp = HASHTABLE_CR[i].head;
-					printf("temp is %s\n", temp->Course);
 					crlist->head->next = NULL;
 					crlist->head = temp;
-
 					temp = crlist->head;
 					if (temp->next != NULL){
 						temp = temp->next;
@@ -87,20 +80,12 @@ struct CRLIST* lookupCR(char* Course, char* Room){
 					printf("elssseee\n");
 					temp->next = HASHTABLE_CR[i].head;
 					temp = temp->next;
-				}
-				//temp->next = HASHTABLE_CR[i].head;//add this to the crlist
-				//temp = temp->next;
-				struct CR* cr_temp2 = HASHTABLE_CR[i].head;
-				/*while(cr_temp2 != NULL){//iterate through the list in this bucket
-					//struct CR* prev = cr_temp2;
-					temp->next = cr_temp2;
-					temp = temp->next;
-					cr_temp2 = cr_temp2->next;
-				}*/
-
+				}				
 			}
 		}
-		return crlist;
+		struct CRLIST* templist = crlist;
+		free(crlist);
+		return templist;
 		//lookup method needs to return specific rooms
 	}
 	else{
@@ -109,6 +94,13 @@ struct CRLIST* lookupCR(char* Course, char* Room){
 	}
 	
 	
+}
+void deleteCR(struct CR* cr){
+	int hash = hc(cr->Course);
+	printf("%s deleting\n\n", cr->Course);
+	HASHTABLE_CR[hash].head = NULL;
+	//printf("\n\nhakfhiaekgjaefij %p\n\n",HASHTABLE_CR[hash].head);
+	//printf("\n %s \n",lookupCR("CS202", "*")->head);
 }
 //----------------CDH = Course, Day, Hour //----------------
 
@@ -333,10 +325,18 @@ int main() {
 
 	struct CR* cr = createCR("CS201", "Ohm Auditorium");
 	insertCR(cr);
-		struct CR* cr2 = createCR("CS202", "Ohm Auditorium");
+	struct CR* cr2 = createCR("CS202", "Ohm Auditorium");
 
 	insertCR(cr2);
 	printf("Lloooking up %p\n", lookupCR("*", "Ohm Auditorium")->head->next->Course);
+	struct CR* cr3 = createCR("CS271", "Ohm Auditorium");
+
+	insertCR(cr3);
+	printf("Lloooking up %s\n", lookupCR("*", "Ohm Auditorium")->head->next->next->Course);
+	deleteCR(cr2);
+	int hash = hc(cr2->Course);
+	printf("\n pointer %p \n", HASHTABLE_CR[hash].head);
+	printf("Lloooking up %s\n", lookupCR("*", "Ohm Auditorium")->head->next->Course);
 
 	//---------------- Test for CP table -----------------//
 	/*struct CP* cp = createCP("CS101", "CS100");
