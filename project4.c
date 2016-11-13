@@ -55,7 +55,25 @@ void insertCR(struct CR* cr){
 struct CRLIST* lookupCR(char* Course, char* Room);
 struct CRLIST* lookupCR(char* Course, char* Room){
 	struct CRLIST* crlist = (struct CRLIST*) malloc(sizeof(struct CRLIST));
-	if (*Course == '*' && *Room != '*'){
+
+	if(*Course == '*' && *Room != '*') {
+		crlist->head = NULL;
+		struct CR* temp;
+		for(int i=0; i<B; i++) {
+			struct CR* temp1 = HASHTABLE_CR.head;
+			struct CR* temp2;
+			struct CR* temp3;
+			while(temp1!=NULL) {
+				if(temp1->Room == Room) {
+					temp3 = temp1;
+					temp3 = crlist.head;
+					crlist.head = temp3;
+					temp1 = temp1.next;
+				}
+			}
+		}
+	}
+/*	if (*Course == '*' && *Room != '*'){
 		struct CR* temp = createCR("not", "not");
 
 		crlist->head = temp;
@@ -92,7 +110,7 @@ struct CRLIST* lookupCR(char* Course, char* Room){
 		int hash = h(*Course);
 		return &HASHTABLE_CR[hash];
 	}
-	
+	*/
 	
 }
 void deleteCR(struct CR* cr){
