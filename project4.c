@@ -16,6 +16,16 @@ void deleteCP(struct CP* cp);
 int h(int x);
 struct CPLIST* lookupCP(char Course[]);//lookup prerequisites for course
 
+int hc(char* x);
+int hc(char* x) {
+	int l=0;
+	for(int i=0; i<strlen(x); i++) {
+		l+=x[i];
+	}
+	return l%B;
+}
+
+
 
 ///**************CDH = Course, Day, Hour *************************//
 
@@ -40,6 +50,27 @@ struct CDH* createCDH(char* Course, char* Day, char* Hour) {
 }
 void insertCDH(struct CDH* cdh);
 void insertCDH(struct CDH* cdh){
+	int hash = hc(cdh->Course);
+
+
+
+	if (HASHTABLE_CDH[hash].head != NULL) {
+
+		struct CDH* temp_CDH = HASHTABLE_CDH[hash].head;
+		HASHTABLE_CDH[hash].head = cdh;
+		cdh->next = temp_CDH;
+		//printf("%s 12 \n", HASHTABLE_CDH[hash].head->Day);
+		//printf("%s 123 \n", HASHTABLE_CDH[hash].head->next->Day);
+	}
+
+	else {
+		HASHTABLE_CDH[hash].head = cdh;
+	}
+
+
+
+
+
 	/*int hash = h(*cdh->Course);
 	printf("Inserting cdh into %d\n", hash);
 	if (HASHTABLE_CDH[hash].head != NULL){
@@ -65,31 +96,31 @@ void insertCDH(struct CDH* cdh){
 	else{
 		HASHTABLE_CDH[hash].head = cdh;
 	}*/
-	int hash = h(*cdh->Course );
+	/*int hash = hc(cdh->Course );
+	printf("cdh head %s %d \n", cdh->Course, hash);
 	if (HASHTABLE_CDH[hash].head != NULL){//if there's a collision
+		printf("going here \n");
 		struct CDH* new_CDH = HASHTABLE_CDH[hash].head;
 	//int i = 0;
 		while(new_CDH != NULL){//go through the list to find the next empty bucket
 			//printf("old cp's prerequisite is %s\n", new_CP->Prerequisite);
 			//i++;
 			//printf("\ni is %d\n", i);
-			struct CDH* prev = new_CDH;
+			printf("here now woah %p %s afwe \n", new_CDH->next, new_CDH->Course);
 			new_CDH = new_CDH->next;
+			printf("%d what is it \n", new_CDH!=NULL);
 			//printf("New_CP's course is %s\n", new_CP->Course);
-			if (new_CDH == NULL){
-				
-				new_CDH = cdh;
-				prev->next = new_CDH;
-				//printf("New_CP's course is %s\n", new_CP->Course);
-
-				new_CDH->next = NULL;
-				break;
-			}
 		}
+		printf("ppppp \n");
+		new_CDH = cdh;
+		printf("qqqqq\n");
+		//printf("New_CP's course is %s\n", new_CP->Course);
 	}
 	else{
+		printf("here\n");
 		HASHTABLE_CDH[hash].head = cdh;
 	}
+	printf("lllll\n");*/
 }
 struct CDHLIST* lookupCDH(char Course[]);
 struct CDHLIST* lookupCDH(char Course[]){
@@ -270,11 +301,11 @@ void file_make();
 void file_make() {
 	FILE *database;
 	database = fopen("program.txt", "w");
-	fprintf(database, "Course,Day,Hour\n");
+	fprintf(database, "Course Day Hour\n");
 	for(int i=0; i<B; i++) {
 		struct CDH* new_CDH = HASHTABLE_CDH[i].head;
 		while(new_CDH != NULL) {
-			fprintf(database, "%s,%s,%s\n", new_CDH->Course, new_CDH->Day, new_CDH->Hour);
+			fprintf(database, "%s %s %s\n", new_CDH->Course, new_CDH->Day, new_CDH->Hour);
 			new_CDH = new_CDH->next;
 		}
 	}
@@ -287,35 +318,30 @@ void file_make() {
 
 void file_read();
 void file_read() {
+	int lol = true;
+	char* course[1000];
+	char* day[1000];
+	char* hour[1000];
+
+	int i=0;
 
 	FILE* database = fopen("program.txt", "r");
-	char* tempstring = malloc(100);
-	while(fgets(tempstring, 1000, database)) {
-		char* cdh3[3];
-		int i=0;
 
-		//printf("%d: tempstring\n ", strncmp(tempstring,"Course,Day,Hour\n", 20)==0);
-		if(strncmp(tempstring,"Course,Day,Hour\n", 20)!=0 &&
-			strncmp(tempstring,"\n",20)!=0) {
-			//printf("here\n");
-			char *stok = strtok(tempstring,",\n");
-			while(stok) {
-				cdh3[i] = stok;
-				//printf("token %s \n", cdh3[i]);
-				stok = strtok(NULL, ",\n");
-				i++;
-			}
-			struct CDH* cdh_new = createCDH(cdh3[0], cdh3[1], cdh3[2]);
-			printf("%s,%s,%s\n", cdh_new->Course,cdh_new->Day,cdh_new->Hour);
-			printf("%s\n", cdh_new->Hour);
-			insertCDH(cdh_new);
-			printf("\n\n NOW NOW %s \n", HASHTABLE_CDH[h(*cdh3[0])].head->Course);
-		}
+	while(lol) {
+		course[i]=malloc(1000 * sizeof(char *));
+		day[i]=malloc(1000 * sizeof(char *));
+		hour[i]=malloc(1000 * sizeof(char *));
+
+		lol = (fscanf(database, "%s %s %s\n", course[i], day[i], hour[i])!=EOF);
+
+		printf("this should be in it %s %s %s \n", course[i], day[i], hour[i]);
+		insertCDH(createCDH(course[i], day[i], hour[i]));
+		printf("tootoo\n");
+		i++;
+
 	}
-	//printf("ok1 \n");
-   	//printf("ok \n");
-   	fclose(database);
 
+   	fclose(database);
 }
 
 int main() {
@@ -332,19 +358,27 @@ int main() {
 
 	int hash = h(*cp->Course );
 
-	printf("%s\n", lookupCP("CS101")->head->next->Prerequisite);
-	//struct CDH* cdh = createCDH("CS171", "M", "9AM");
-	//insertCDH(cdh);
-	//struct CDH* cdh2 = createCDH("CS172", "T", "17AM");
-	//insertCDH(cdh2);
-	//	struct CDH* cdh3 = createCDH("CS173", "W", "17AM");
-	//insertCDH(cdh3);
+	//printf("%s\n", lookupCP("CS101")->head->next->Prerequisite);
+	struct CDH* cdh = createCDH("CS171", "M", "1AM");
+	insertCDH(cdh);
+	struct CDH* cdh2 = createCDH("CS171", "T", "2AM");
+	insertCDH(cdh2);
+	struct CDH* cdh3 = createCDH("CS173", "W", "3AM");
+	insertCDH(cdh3);
+	struct CDH* cdh4 = createCDH("CS173", "TH", "4AM");
+	insertCDH(cdh4);
+	struct CDH* cdh5 = createCDH("CS163", "FI", "78AM");
+	insertCDH(cdh5);
 	//struct CDH* test = lookupCDH("CSC171")->head->next;
+	//printf(" NOW NOW %s \n", HASHTABLE_CDH[h(*"CSC172")].head->next->next->Course);
 	//printf("%s\n", test->next->Day);
-	//file_make();
+	file_make();
 	file_read();
-	//file_make();
-	//file_make();
+	file_make();
+	printf("Finally %s \n", HASHTABLE_CDH[hc("CS171")].head->next->Course);
+	struct CDH* cdh6 = createCDH("CS162", "FadI", "78safdAM");
+	insertCDH(cdh6);
+	file_make();
 
 	return 0;
 
