@@ -14,7 +14,7 @@ void deleteCSG(struct CSG* csg);
 void insert(struct TUPLE* tuple);
 void deleteCP(struct CP* cp);
 int h(int x);
-struct CPLIST* lookupCP(char Course[]);//lookup prerequisites for course
+struct CPLIST* lookupCP(char Course[], char Prerequisite[]);//lookup prerequisites for course
 
 int hc(char* x);
 int hc(char* x) {
@@ -135,25 +135,38 @@ void insertCDH(struct CDH* cdh){
 		HASHTABLE_CDH[hash].head = cdh;
 	}
 }
-struct CDHLIST* lookupCDH(char Course[]);
-struct CDHLIST* lookupCDH(char Course[]) {
-	int hash = h(*Course);
-	printf("Hash is %d\n", hash);
-	return &HASHTABLE_CDH[hash];
+struct CDHLIST* lookupCDH(char Course[], char Day[], char Hour[]);
+struct CDHLIST* lookupCDH(char Course[], char Day[], char Hour[]) {
+	struct CDHLIST* cdhlist = (struct CDHLIST*) malloc(sizeof(struct CDHLIST));
+		cdhlist->head = NULL;
+		struct CDH* temp;
+		for(int i=0; i<B; i++) {
+			struct CDH* temp1 = HASHTABLE_CDH[i].head;
+			while(temp1!=NULL) {
+				if((temp1->Course == Course || *temp1->Course == '*') && (temp1->Day == Day || *Day == '*') && (temp1->Hour == Hour || *Hour == '*')) {
+					struct CDH* temp2 = createCDH(temp1->Course, temp1->Day, temp1->Hour);
+					temp2->next = cdhlist->head;
+					cdhlist->head = temp2;
+				}
+				temp1=temp1->next;
+			}
+		}
+		return cdhlist;
+
+	
 }
 void deleteCDH(struct CDH* cdh){
-	int hash = h(*cdh->Course);
+	int hash = hc(cdh->Course);
 	struct CDH* temp_cdh = HASHTABLE_CDH[hash].head;
-	if (*cdh->Day == *temp_cdh->Day && *cdh->Hour == *temp_cdh->Hour){
-		//HASHTABLE_CDH[hash].head = NULL;
+	if (*cdh->Day == *temp_cdh->Day && *cdh->Hour == *temp_cdh->Hour){//delete the head
 		HASHTABLE_CDH[hash].head = HASHTABLE_CDH[hash].head->next;
 	}
 	else{
-		while(temp_cdh != NULL){
+		struct CDH* prev = temp_cdh;
+		while(temp_cdh->next != NULL){//not the head
 			temp_cdh = temp_cdh->next;
 			if (*temp_cdh->Day == *cdh->Day && *temp_cdh->Hour == *cdh->Hour){
-				///HASHTABLE_CDH[]
-				temp_cdh = NULL;
+				prev->next = temp_cdh->next;
 				break;
 			}
 		}
@@ -182,35 +195,79 @@ struct CP* createCP(char* Course, char* Prerequisite){
 }
 void insertCP(struct CP* cp){
 	int hash = hc(cp->Course);
-
 	if (HASHTABLE_CP[hash].head != NULL) {
-
 		struct CP* temp_CP = HASHTABLE_CP[hash].head;
 		HASHTABLE_CP[hash].head = cp;
 		cp->next = temp_CP;
-		//printf("%s 12 \n", HASHTABLE_CDH[hash].head->Day);
-		//printf("%s 123 \n", HASHTABLE_CDH[hash].head->next->Day);
 	}
-
 	else {
 		HASHTABLE_CP[hash].head = cp;
+		HASHTABLE_CP[hash].head->next = NULL;
 	}
 }
-struct CPLIST* lookupCP(char Course[]){//lookup prerequisites for course
-	int hash = h(*Course );
-	return &HASHTABLE_CP[hash];
+struct CPLIST* lookupCP(char Course[], char Prerequisite[]){//lookup prerequisites for course
+	/*int hash = hc(Course );
+	return &HASHTABLE_CP[hash];*/
+	//////////////
+
+	struct CPLIST* cplist = (struct CPLIST*) malloc(sizeof(struct CPLIST));
+		cplist->head = NULL;
+		struct CP* temp;
+		for(int i=0; i<B; i++) {
+			struct CP* temp1 = HASHTABLE_CP[i].head;
+			while(temp1!=NULL) {
+				if((temp1->Course == Course || *Course == '*') && (temp1->Prerequisite == Prerequisite || *Prerequisite == '*') ) {
+					struct CP* temp2 = createCP(temp1->Course, temp1->Prerequisite);
+					temp2->next = cplist->head;
+					cplist->head = temp2;
+				}
+				temp1=temp1->next;
+			}
+		}
+		return cplist;
+
+	/////
 }
 void deleteCP(struct CP* cp){
-	int hash = h(*cp->Course );
+	/*int hash = hc(cp->Course );
 	if (HASHTABLE_CP[hash].head != NULL){
 		//HASHTABLE_CP[hash].head = NULL;
-		/*struct temp_cp = HASHTABLE_CP[hash].head;
+		struct CP* prev;
+		struct CP* temp_cp = HASHTABLE_CP[hash].head;
 		while(temp_cp ->Course != cp->Course && temp_cp->Prerequisite != cp->Prerequisite){
-			struct CP* prev = temp_cp;
+			prev = temp_cp;
 			temp_cp = temp_cp->next;
 
-		}*/
+		}
+		prev->next = temp_cp;
+
 	}
+
+
+*/
+	int hash = hc(cp->Course);
+	struct CP* temp_cp = HASHTABLE_CP[hash].head;
+	if (cp->Course == temp_cp->Course && cp->Prerequisite == temp_cp->Prerequisite){//delete the head
+		//printf("Deleting head Course: %s Prereq:%s\n\n", temp_cp->Course, temp_cp->Prerequisite);
+		 printf(" %s == %s\n", cp->Prerequisite, temp_cp->Prerequisite);
+		 printf("%d, %d", *cp->Course == *temp_cp->Course, *cp->Prerequisite == *temp_cp->Prerequisite);
+		HASHTABLE_CP[hash].head = HASHTABLE_CP[hash].head->next;
+		printf("%p\n", HASHTABLE_CP[hash].head->next->next);
+	}
+	else{
+		struct CP* prev = temp_cp;
+		while(temp_cp->next != NULL){//not the head
+			temp_cp = temp_cp->next;
+			if (*temp_cp->Course == *cp->Course && *temp_cp->Prerequisite == *cp->Prerequisite){
+				printf("PRev is %s\n", prev->Course);
+				prev->next = temp_cp->next;
+				break;
+			}
+		}
+	}
+
+
+
 }
 
 ///**************TUPLE = SNAP *************************//
@@ -355,6 +412,23 @@ int main() {
 	for(int i=0; i<B; i++) {
 		HASHTABLE_CDH[i].head=NULL;
 	}
+	/*struct CDH* cdh = createCDH("CS171", "M", "1AM");
+	insertCDH(cdh);
+	struct CDH* cdh2 = createCDH("CS171", "T", "2AM");
+	insertCDH(cdh2);
+	struct CDH* cdh3 = createCDH("CS173", "W", "3AM");
+	insertCDH(cdh3);
+	struct CDH* cdh4 = createCDH("CS173", "TH", "4AM");
+	insertCDH(cdh4);
+	struct CDH* cdh5 = createCDH("CS163", "FI", "78AM");
+	insertCDH(cdh5);
+	printf("%s\n", lookupCDH("CS173", "TH", "*")->head->Hour);
+	deleteCDH(cdh5);
+	printf("%p\n", lookupCDH("163", "FI", "*")->head);
+	deleteCDH(cdh3);
+		printf("%s\n", lookupCDH("CS173", "*", "*")->head->Hour);
+
+*/
 	
 	struct CP* cp = createCP("CS101", "CS100");
 	insertCP(cp);
@@ -363,10 +437,19 @@ int main() {
 	struct CP* cp3 = createCP("CS101", "CS99");
 	insertCP(cp3);
 
-	int hash = h(*cp->Course );
+	//insertCP(cp4);
+	int hash = hc("CS101");
+	printf("CS102 is %s\n", HASHTABLE_CP[hash].head->next->Prerequisite);
+	printf("helo%s\n", lookupCP("CS101", "*")->head->next->Prerequisite);
+	deleteCP(cp2);
+	printf("somthaf\n");
+	deleteCP(cp3);
+	//printf("%s\n", lookupCP("*", "CS100")->head->Prerequisite);
+	//printf("CS102 is %s\n", HASHTABLE_CP[hash].head->next->Prerequisite);
 
-	//printf("%s\n", lookupCP("CS101")->head->next->Prerequisite);
-	struct CDH* cdh = createCDH("CS171", "M", "1AM");
+	//hash = hc("CS101");
+
+	/*struct CDH* cdh = createCDH("CS171", "M", "1AM");
 	insertCDH(cdh);
 	struct CDH* cdh2 = createCDH("CS171", "T", "2AM");
 	insertCDH(cdh2);
@@ -385,7 +468,7 @@ int main() {
 	printf("Finally %s \n", HASHTABLE_CDH[hc("CS171")].head->next->Course);
 	struct CDH* cdh6 = createCDH("CS162", "FadI", "78safdAM");
 	insertCDH(cdh6);
-	file_make();
+	file_make();*/
 
 	return 0;
 
