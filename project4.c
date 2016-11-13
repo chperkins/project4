@@ -66,6 +66,7 @@ struct CRLIST* lookupCR(char* Course, char* Room){
 					struct CR* temp2 = createCR(temp1->Course, temp1->Room);
 					temp2->next = crlist->head;
 					crlist->head = temp2;
+
 				}
 				temp1=temp1->next;
 			}
@@ -106,7 +107,7 @@ struct CRLIST* lookupCR(char* Course, char* Room){
 		//lookup method needs to return specific rooms
 	}*/
 	else{
-		int hash = h(*Course);
+		int hash = hc(Course);
 		return &HASHTABLE_CR[hash];
 	}
 	
@@ -349,11 +350,11 @@ int main() {
 	struct CR* cr3 = createCR("CS271", "Ohm Auditorium");
 
 	insertCR(cr3);
-	printf("Lloooking up %s\n", lookupCR("*", "Ohm Auditorium")->head->next->next->Course);
+	//printf("Lloooking up %s\n", lookupCR("*", "Ohm Auditorium")->head->next->next->Course);
 	deleteCR(cr2);
 	int hash = hc(cr2->Course);
 	printf("\n pointer %p \n", HASHTABLE_CR[hash].head);
-	printf("Lloooking up %s\n", lookupCR("*", "Ohm Auditorium")->head->next->Course);
+	//printf("Lloooking up %s\n", lookupCR("*", "Ohm Auditorium")->head->next->Course);
 
 	//---------------- Test for CP table -----------------//
 	/*struct CP* cp = createCP("CS101", "CS100");
