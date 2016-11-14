@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #define B 1009
 struct CP* createCP(char Course[], char Prerequisite[]);
@@ -24,6 +25,23 @@ int hc(char* x) {
 
 
 }
+
+/*char* removeSpecial(char* str);
+char* removeSpecial(char* str) {
+
+	char strStripped[50];
+
+	int i = 0, c = 0;
+	for(; i < strlen(str); i++) {
+	    if (isalnum(str[i])) {
+	        strStripped[c] = str[i];
+	        c++;
+	    }
+	}
+	strStripped[c] = '\0';
+
+	return strStripped;
+}*/
 
 
 //----------------CR = Course, Room //----------------
@@ -115,25 +133,7 @@ struct CDH* createCDH(char* Course, char* Day, char* Hour) {
 	x->next = NULL;
 	return x;
 }
-void insertCDH(struct CDH* cdh);
-void insertCDH(struct CDH* cdh){
-	int hash = hc(cdh->Course);
 
-
-
-	if (HASHTABLE_CDH[hash].head != NULL) {
-
-		struct CDH* temp_CDH = HASHTABLE_CDH[hash].head;
-		HASHTABLE_CDH[hash].head = cdh;
-		cdh->next = temp_CDH;
-		//printf("%s 12 \n", HASHTABLE_CDH[hash].head->Day);
-		//printf("%s 123 \n", HASHTABLE_CDH[hash].head->next->Day);
-	}
-
-	else {
-		HASHTABLE_CDH[hash].head = cdh;
-	}
-}
 struct CDHLIST* lookupCDH(char Course[], char Day[], char Hour[]);
 struct CDHLIST* lookupCDH(char Course[], char Day[], char Hour[]) {
 	struct CDHLIST* cdhlist = (struct CDHLIST*) malloc(sizeof(struct CDHLIST));
@@ -154,6 +154,43 @@ struct CDHLIST* lookupCDH(char Course[], char Day[], char Hour[]) {
 
 	
 }
+
+void insertCDH(struct CDH* cdh);
+void insertCDH(struct CDH* cdh){
+	int hash = hc(cdh->Course);
+	printf("here10 \n");
+	//struct CDH* lookupcdh = lookupCDH(cdh->Course, cdh->Day, cdh->Hour)->head;
+
+	if(lookupCDH(cdh->Course, cdh->Day, cdh->Hour)->head==NULL) {
+
+		printf("not in yet true? |%d| |%p| |%s| |%s| |%s| \n", lookupCDH(cdh->Course, cdh->Day, cdh->Hour)->head==NULL, 
+			lookupCDH(cdh->Course, cdh->Day, cdh->Hour)->head,
+			cdh->Course, cdh->Day, cdh->Hour);
+		printf("booleans %d %d %d\n", strcmp(cdh->Course, "CS173"),strcmp(cdh->Day, "W"),strcmp(cdh->Hour, "3AM"));
+
+		if (HASHTABLE_CDH[hash].head != NULL) {
+
+			struct CDH* temp_CDH = HASHTABLE_CDH[hash].head;
+			HASHTABLE_CDH[hash].head = cdh;
+			cdh->next = temp_CDH;
+			//printf("%s 12 \n", HASHTABLE_CDH[hash].head->Day);
+			//printf("%s 123 \n", HASHTABLE_CDH[hash].head->next->Day);
+		}
+
+		else {
+			HASHTABLE_CDH[hash].head = cdh;
+		}
+	}
+	else {
+		printf("already in \n");
+	}
+
+	//printf("lookup result |%s| |%s| |%s|\n", lookupCDH(cdh->Course, cdh->Day, cdh->Hour)->head->Course,
+	//	lookupCDH(cdh->Course, cdh->Day, cdh->Hour)->head->Day,
+	//	lookupCDH(cdh->Course, cdh->Day, cdh->Hour)->head->Hour);
+
+}
+
 void deleteCDH(struct CDH* cdh){
 
 	int hash = hc(cdh->Course);
@@ -516,6 +553,10 @@ void file_read_CDH() {
 	char* day[1000];
 	char* hour[1000];
 
+	char* scourse[1000];
+	char* sday[1000];
+	char* shour[1000];
+
 	int i=0;
 
 	FILE* database = fopen("CDH_table.txt", "r");
@@ -527,7 +568,12 @@ void file_read_CDH() {
 
 		lol = (fscanf(database, "%s %s %s\n", course[i], day[i], hour[i])!=EOF);
 
-		if(strcmp(course[i],"Course")!=0) {
+
+		printf("here 13 \n");
+
+		printf("here 11 \n");
+
+		if(strcmp(course[i],"Course")!=0 && strcmp(course[i],"")!=0) {
 			insertCDH(createCDH(course[i], day[i], hour[i]));
 		}
 		//printf("this should be in it %s %s %s \n", course[i], day[i], hour[i]);
@@ -636,30 +682,37 @@ int main() {
 	//insertCDH(cdh2);
 	struct CDH* cdh3 = createCDH("CS173", "W", "3AM");
 	insertCDH(cdh3);
-	struct CDH* cdh4 = createCDH("CS173", "TH", "4AM");
-	insertCDH(cdh4);
-	struct CDH* cdh5 = createCDH("CS173", "FI", "78AM");
-	insertCDH(cdh5);
+	//printf("point is %p \n", lookupCDH("CS173", "W", "3AM")->head);
+	//printf("looking up %p", lookupCDH("CS173", "W", "3AM")->head);
+	//struct CDH* cdh4 = createCDH("CS173", "TH", "4AM");
+	//insertCDH(cdh4);
+	//struct CDH* cdh5 = createCDH("CS173", "FI", "78AM");
+	//nsertCDH(cdh5);
 	//deleteCDH(cdh5);
 	insertSNAP(createSNAP("a","b","c","d"));
 	//deleteSNAP(createSNAP("a","b","c","d"));
-	printf("ok123\n");
-	printf("first snap %s \n", HASHTABLE_SNAP[hc("a")].head->StudentId);
-	printf("%s %sxyz\n", HASHTABLE_CDH[hash].head->Hour,
-		HASHTABLE_CDH[hash].head->next->Hour);
+	//printf("ok123\n");
+	//printf("first snap %s \n", HASHTABLE_SNAP[hc("a")].head->StudentId);
+	//printf("%s %sxyz\n", HASHTABLE_CDH[hash].head->Hour,
+	//	HASHTABLE_CDH[hash].head->next->Hour);
 	char* abc = "1";
-	printf("is it equal %d %d \n", *abc-'0','*');
+	//printf("is it equal %d %d \n", *abc-'0','*');
 	//struct CDH* test = lookupCDH("CSC171")->head->next;
 	//printf(" NOW NOW %s \n", HASHTABLE_CDH[h(*"CSC172")].head->next->next->Course);
 	//printf("%s\n", test->next->Day);
+	//printf("is it in %s\n", lookupCDH("CS173", "W", "3AM")->head->Day);
+	printf("here1 \n");
 	file_make_CDH();
+	printf("here2 \n");
 	file_read_CDH();
+	printf("here3 \n");
 	file_make_CDH();
+	//printf("point is %p \n", lookupCDH("CS173", "W", "3AM")->head);
 	//printf("Finally %s \n", HASHTABLE_CDH[hc("CS171")].head->next->Course);
 	//struct CDH* cdh6 = createCDH("CS162", "FadI", "78safdAM");
 	//insertCDH(cdh6);
-	file_read_CDH();
-	file_make_CDH();
+	//file_read_CDH();
+	//file_make_CDH();
 	struct CR* cr1 = createCR("CS12","ROOM1010");
 	struct CR* cr2 = createCR("CS13","ROOM1011");
 	insertCR(cr1);
