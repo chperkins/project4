@@ -1,8 +1,4 @@
 Course Day Hour
-  
-CS173 W 3AM
-CS173 TH 4AM
 CS173 TH 4AM
 CS173 W 3AM
-Course Day Hour
 

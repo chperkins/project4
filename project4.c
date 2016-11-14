@@ -462,10 +462,25 @@ struct CSGLIST* lookupCSG(char* Course, char* StudentId, char* Grade){//lookup w
 	return CSGlist;
 }
 
-void file_make();
-void file_make() {
+void file_make_CR();
+void file_make_CR() {
 	FILE *database;
-	database = fopen("program.txt", "w");
+	database = fopen("CR_table.txt", "w");
+	fprintf(database, "Course Room\n");
+	for(int i=0; i<B; i++) {
+		struct CR* new_CR = HASHTABLE_CR[i].head;
+		while(new_CR != NULL) {
+			fprintf(database, "%s %s\n", new_CR->Course, new_CR->Room);
+			new_CR = new_CR->next;
+		}
+	}
+   	fclose(database);
+}
+
+void file_make_CDH();
+void file_make_CDH() {
+	FILE *database;
+	database = fopen("CDH_table.txt", "w");
 	fprintf(database, "Course Day Hour\n");
 	for(int i=0; i<B; i++) {
 		struct CDH* new_CDH = HASHTABLE_CDH[i].head;
@@ -474,7 +489,6 @@ void file_make() {
 			new_CDH = new_CDH->next;
 		}
 	}
-	fprintf(database,"\n");
    	fclose(database);
 }
 
@@ -486,8 +500,8 @@ void file_make() {
 //	CDHLIST HASHTABLE_CDH[B];
 //};
 
-void file_read();
-void file_read() {
+void file_read_CDH();
+void file_read_CDH() {
 	int lol = true;
 	char* course[1000];
 	char* day[1000];
@@ -495,7 +509,7 @@ void file_read() {
 
 	int i=0;
 
-	FILE* database = fopen("program.txt", "r");
+	FILE* database = fopen("CDH_table.txt", "r");
 
 	while(lol) {
 		course[i]=malloc(1000 * sizeof(char *));
@@ -504,8 +518,38 @@ void file_read() {
 
 		lol = (fscanf(database, "%s %s %s\n", course[i], day[i], hour[i])!=EOF);
 
+		if(strcmp(course[i],"Course")!=0) {
+			insertCDH(createCDH(course[i], day[i], hour[i]));
+		}
 		//printf("this should be in it %s %s %s \n", course[i], day[i], hour[i]);
-		insertCDH(createCDH(course[i], day[i], hour[i]));
+		//printf("tootoo\n");
+		i++;
+
+	}
+
+   	fclose(database);
+}
+
+void file_read_CR();
+void file_read_CR() {
+	int lol = true;
+	char* course[1000];
+	char* room[1000];
+
+	int i=0;
+
+	FILE* database = fopen("CR_table.txt", "r");
+
+	while(lol) {
+		course[i]=malloc(1000 * sizeof(char *));
+		room[i]=malloc(1000 * sizeof(char *));
+
+		lol = (fscanf(database, "%s %s\n", course[i], room[i])!=EOF);
+
+		//printf("this should be in it %s %s %s \n", course[i], day[i], hour[i]);
+		if(strcmp(course[i],"Course")!=0) {
+			insertCR(createCR(course[i], room[i]));
+		}
 		//printf("tootoo\n");
 		i++;
 
@@ -571,7 +615,7 @@ int main() {
 	insertCDH(cdh4);
 	struct CDH* cdh5 = createCDH("CS173", "FI", "78AM");
 	insertCDH(cdh5);
-	deleteCDH(cdh5);
+	//deleteCDH(cdh5);
 	insertSNAP(createSNAP("a","b","c","d"));
 	//deleteSNAP(createSNAP("a","b","c","d"));
 	printf("ok123\n");
@@ -583,13 +627,21 @@ int main() {
 	//struct CDH* test = lookupCDH("CSC171")->head->next;
 	//printf(" NOW NOW %s \n", HASHTABLE_CDH[h(*"CSC172")].head->next->next->Course);
 	//printf("%s\n", test->next->Day);
-	file_make();
-	file_read();
-	file_make();
+	file_make_CDH();
+	file_read_CDH();
+	file_make_CDH();
 	//printf("Finally %s \n", HASHTABLE_CDH[hc("CS171")].head->next->Course);
 	//struct CDH* cdh6 = createCDH("CS162", "FadI", "78safdAM");
 	//insertCDH(cdh6);
-	file_make();
+	file_read_CDH();
+	file_make_CDH();
+	struct CR* cr1 = createCR("CS12","ROOM1010");
+	struct CR* cr2 = createCR("CS13","ROOM1011");
+	insertCR(cr1);
+	insertCR(cr2);
+	file_make_CR();
+	file_read_CR();
+	file_make_CR();
 
 	return 0;
 
