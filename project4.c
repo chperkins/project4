@@ -493,12 +493,21 @@ void file_make_CDH() {
 }
 
 
+void file_make_CP();
+void file_make_CP() {
 
+}
 
+void file_make_SNAP();
+void file_make_SNAP() {
+	
+}
 
-//struct cDatabase {
-//	CDHLIST HASHTABLE_CDH[B];
-//};
+void file_make_CSG();
+void file_make_CSG() {
+	
+}
+
 
 void file_read_CDH();
 void file_read_CDH() {
@@ -557,6 +566,22 @@ void file_read_CR() {
 
    	fclose(database);
 }
+
+void file_read_CP();
+void file_read_CP() {
+
+}
+
+void file_read_SNAP();
+void file_read_SNAP() {
+	
+}
+
+void file_read_CSG();
+void file_read_CSG() {
+	
+}
+
 
 int main() {
 	for(int i=0; i<B; i++) {
