@@ -7,9 +7,7 @@
 struct CP* createCP(char Course[], char Prerequisite[]);
 struct SNAP* createSNAP(char* StudentId, char Name[], char Address[], char Phone[]);
 struct CSG* createCSG(char Course[], char* StudentId, char Grade[]);
-void insertCSG(struct CSG* csg);
 struct SNAP* lookup(struct SNAP* SNAP);
-struct CSG* lookupCSG(struct CSG* csg);
 void deleteCSG(struct CSG* csg);
 void insert(struct SNAP* SNAP);
 void deleteCP(struct CP* cp);
@@ -369,8 +367,8 @@ struct SNAPLIST* lookupSNAP(char* StudentId, char* Name, char* Address, char* Ph
 //----------------------///
 					//CSGs
 //----------------------///
-typedef struct CSGLIST *CSGLIST;
-struct CSG {
+typedef struct CSG *CSGLIST;
+struct CSG{
 	char* Course;
 	char* StudentId;
 	char* Grade;
@@ -381,28 +379,87 @@ struct CSGLIST{
 };
 struct CSGLIST HASHTABLE_CSG[B];
 
-struct CSG* createCSG(char* Course, char* StudentId, char* Grade){
+struct CSG* createCSG(char* Course, char* StudentId, char* Grade) {
 	struct CSG* x = (struct CSG*) malloc(sizeof(struct CSG));
 	x->Course=Course;
+	x->StudentId=StudentId;
 	x->Grade=Grade;
-	x->StudentId = StudentId;
 	x->next = NULL;
 	return x;
 }
 
+void insertCSG(struct CSG* csg);
 void insertCSG(struct CSG* csg){//use STUDENT ID as the hashtable
-	int hash = hc(csg->StudentId);
-	HASHTABLE_CSG[hash].head = csg;
+	int hash = hc(csg->Course);
+
+	if (HASHTABLE_CSG[hash].head != NULL) {
+
+		struct CSG* temp_CSG= HASHTABLE_CSG[hash].head;
+		HASHTABLE_CSG[hash].head = csg;
+		csg->next = temp_CSG;
+		//printf("%s 12 \n", HASHTABLE_CDH[hash].head->Day);
+		//printf("%s 123 \n", HASHTABLE_CDH[hash].head->next->Day);
+	}
+
+	else {
+		HASHTABLE_CSG[hash].head = csg;
+	}
+
 }
 void deleteCSG(struct CSG* csg){
-	int hash = hc(csg->StudentId);
-	if (HASHTABLE_CSG[hash].head != NULL){
-		HASHTABLE_CSG[hash].head = NULL;
+
+	int hash = hc(csg->Course);
+
+	int match = 0;
+	struct CSG* temp_csg = HASHTABLE_CSG[hash].head;
+	struct CSG* temp_csg_next = temp_csg->next;
+
+	if(csg->Course== temp_csg->Course &&
+		 csg->StudentId == temp_csg->StudentId &&
+		 csg->Grade == temp_csg->Grade) {
+
+		HASHTABLE_CSG[hash].head = HASHTABLE_CSG[hash].head->next;
+		match=1;
 	}
+	while(temp_csg_next!=NULL && match == 0) {
+		if (csg->Course== temp_csg_next->Course &&
+		 csg->StudentId == temp_csg_next->StudentId &&
+		 csg->Grade == temp_csg_next->Grade) {
+			//printf("cdh->course %s, cp->pre %s\n", cdh->Course, cdh->Hour);
+			//printf("temp_cdh_next %s %s\n", temp_cdh_next->Course, temp_cdh_next->Hour);
+			//printf("temp_cdh is %s, temp_cdh_next is %s\n", temp_cdh->Hour, temp_cdh_next->Hour);
+			temp_csg->next = temp_csg_next->next;
+			match=1;
+		}
+		else {
+			temp_csg = temp_csg->next;
+			temp_csg_next = temp_csg_next->next;
+		}
+	}
+
 }
-struct CSG* lookupCSG(struct CSG* csg){//lookup with the SNAP
-	int key = hc(csg->StudentId);
-	return HASHTABLE_CSG[key].head;
+struct CSGLIST* lookupCSG(char* Course, char* StudentId, char* Grade);
+struct CSGLIST* lookupCSG(char* Course, char* StudentId, char* Grade){//lookup with the SNAP
+
+	struct CSGLIST* CSGlist = (struct CSGLIST*) malloc(sizeof(struct CSGLIST));
+
+		CSGlist->head = NULL;
+		struct CSG* temp;
+		for(int i=0; i<B; i++) {
+			struct CSG* temp1 = HASHTABLE_CSG[i].head;
+			while(temp1!=NULL) {
+				if((temp1->StudentId == StudentId || *StudentId == '*') &&
+				 (temp1->Course == Course || *Course == '*') &&
+				 (temp1->Grade == Grade || *Grade == '*')) {
+
+					struct CSG* temp2 = createCSG(temp1->Course, temp1->StudentId, temp1->Grade);
+					temp2->next = CSGlist->head;
+					CSGlist->head = temp2;
+				}
+				temp1=temp1->next;
+			}
+		}
+	return CSGlist;
 }
 
 void file_make();
