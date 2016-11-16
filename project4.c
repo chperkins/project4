@@ -119,10 +119,24 @@ struct CDHLIST* lookupCDH(char Course[], char Day[], char Hour[], struct CDHLIST
 	struct CDHLIST* cdhlist = (struct CDHLIST*) malloc(sizeof(struct CDHLIST));
 		cdhlist->head = NULL;
 		struct CDH* temp;
+	if (strcmp(Course, "*")!=0){
+		int hash = hc(Course);
+
+		struct CDH* temp1 = HASHTABLE_CDH[hash].head;
+		while(temp1!=NULL) {
+			if((strcmp(temp1->Course,Course)==0 || strcmp(Course, "*")==0) && (strcmp(temp1->Day,Day)==0 || strcmp(Day, "*")==0) && (strcmp(temp1->Hour,Hour)==0 || strcmp(Hour, "*")==0)) {
+				struct CDH* temp2 = createCDH(temp1->Course, temp1->Day, temp1->Hour);
+				temp2->next = cdhlist->head;
+				cdhlist->head = temp2;
+			}
+			temp1=temp1->next;
+		}
+	}
+	else{
 		for(int i=0; i<B; i++) {
 			struct CDH* temp1 = HASHTABLE_CDH[i].head;
 			while(temp1!=NULL) {
-				if((strcmp(temp1->Course,Course)==0 || *temp1->Course == '*') && (strcmp(temp1->Day,Day)==0 || *Day == '*') && (strcmp(temp1->Hour,Hour)==0 || *Hour == '*')) {
+				if((strcmp(temp1->Course,Course)==0 || strcmp(Course, "*")==0) && (strcmp(temp1->Day,Day)==0 || strcmp(Day, "*")==0) && (strcmp(temp1->Hour,Hour)==0 || strcmp(Hour, "*")==0)) {
 					struct CDH* temp2 = createCDH(temp1->Course, temp1->Day, temp1->Hour);
 					temp2->next = cdhlist->head;
 					cdhlist->head = temp2;
@@ -130,6 +144,7 @@ struct CDHLIST* lookupCDH(char Course[], char Day[], char Hour[], struct CDHLIST
 				temp1=temp1->next;
 			}
 		}
+	}
 		return cdhlist;
 
 	
@@ -796,7 +811,7 @@ int main() {
 		hash_snap[i].head=NULL;
 		hash_csg[i].head=NULL;
 	}
-
+/*
 	struct CSG* csg1 = createCSG("CS101", "12345", "A");
 	struct CSG* csg2 = createCSG("CS101", "67890", "B");
 	struct CSG* csg3 = createCSG("EE200", "12345", "C");
@@ -843,7 +858,7 @@ int main() {
 	insertCP(cp8, hash_cp);
 
 	file_make_CP(hash_cp);
-
+*/
 	struct CDH* cdh1 = createCDH("CS101", "M", "9AM");
 	struct CDH* cdh2 = createCDH("CS101", "W", "9AM");
 	struct CDH* cdh3 = createCDH("CS101", "F", "9AM");
@@ -858,8 +873,8 @@ int main() {
 	insertCDH(cdh4, hash_cdh);
 	insertCDH(cdh5, hash_cdh);
 	insertCDH(cdh6, hash_cdh);
-
-	file_make_CDH(hash_cdh);
+	printf("%s\n", lookupCDH("EE200", "Th", "*", hash_cdh)->head->Day);
+/*	file_make_CDH(hash_cdh);
 
 	struct CR* cr1 = createCR("CS101", "Turing_Aud");
 	struct CR* cr2 = createCR("EE200", "25_Ohm_Hall");
@@ -876,7 +891,7 @@ int main() {
 
 
 
-
+*/
 
 
 	/*struct CDH* cdh = createCDH("CS171", "M", "1AM");
