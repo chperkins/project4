@@ -1,4 +1,4 @@
 Course Room
- 
-CS12 ROOM1010
-CS13 ROOM1011
+EE200 25_Ohm_Hall
+CS101 Turing_Aud
+PH100 Newton_Lab
