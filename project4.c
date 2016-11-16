@@ -51,7 +51,7 @@ struct CRLIST* lookupCR(char* Course, char* Room, struct CRLIST HASHTABLE_CR[]) 
 		for(int i=0; i<B; i++) {
 			struct CR* temp1 = HASHTABLE_CR[i].head;
 			while(temp1!=NULL) {
-				if((strcmp(temp1->Course,Course)==0 || *Course == '*') && (strcmp(temp1->Room,Room)==0 || *Room == '*') ) {
+				if((strcmp(temp1->Course,Course)==0 || strcmp(Course,"*")==0) && (strcmp(temp1->Room,Room)==0 || strcmp(Room,"*")==0) ) {
 					struct CR* temp2 = createCR(temp1->Course, temp1->Room);
 					temp2->next = crlist->head;
 					crlist->head = temp2;
@@ -122,7 +122,9 @@ struct CDHLIST* lookupCDH(char Course[], char Day[], char Hour[], struct CDHLIST
 		for(int i=0; i<B; i++) {
 			struct CDH* temp1 = HASHTABLE_CDH[i].head;
 			while(temp1!=NULL) {
-				if((strcmp(temp1->Course,Course)==0 || *temp1->Course == '*') && (strcmp(temp1->Day,Day)==0 || *Day == '*') && (strcmp(temp1->Hour,Hour)==0 || *Hour == '*')) {
+				printf("temp1 course %s %s %s  \n", temp1->Course, temp1->Day, temp1->Hour);
+				if((strcmp(temp1->Course,Course)==0 || strcmp(Course,"*")==0) && (strcmp(temp1->Day,Day)==0 || strcmp(Day,"*")==0) && (strcmp(temp1->Hour,Hour)==0 || strcmp(Hour,"*")==0)) {
+					printf("got here \n");
 					struct CDH* temp2 = createCDH(temp1->Course, temp1->Day, temp1->Hour);
 					temp2->next = cdhlist->head;
 					cdhlist->head = temp2;
@@ -228,7 +230,7 @@ struct CPLIST* lookupCP(char* Course, char* Prerequisite, struct CPLIST HASHTABL
 		for(int i=0; i<B; i++) {
 			struct CP* temp1 = HASHTABLE_CP[i].head;
 			while(temp1!=NULL) {
-				if((strcmp(temp1->Course,Course)==0 || *Course == '*') && (strcmp(temp1->Prerequisite,Prerequisite)==0 || *Prerequisite == '*') ) {
+				if((strcmp(temp1->Course,Course)==0 || strcmp(Course,"*")==0) && (strcmp(temp1->Prerequisite,Prerequisite)==0 || strcmp(Prerequisite,"*")==0) ) {
 					struct CP* temp2 = createCP(temp1->Course, temp1->Prerequisite);
 					temp2->next = cplist->head;
 					cplist->head = temp2;
@@ -358,10 +360,10 @@ struct SNAPLIST* lookupSNAP(char* StudentId, char* Name, char* Address, char* Ph
 		for(int i=0; i<B; i++) {
 			struct SNAP* temp1 = HASHTABLE_SNAP[i].head;
 			while(temp1!=NULL) {
-				if((strcmp(temp1->StudentId,StudentId)==0 || *StudentId == '*') &&
-				 (strcmp(temp1->Name,Name)==0 || *Name == '*') &&
-				 (strcmp(temp1->Address,Address)==0 || *Address == '*') &&
-				 (strcmp(temp1->Phone,Phone)==0 || *Phone == '*')) {
+				if((strcmp(temp1->StudentId,StudentId)==0 || strcmp(StudentId,"*")==0) &&
+				 (strcmp(temp1->Name,Name)==0 || strcmp(Name,"*")==0) &&
+				 (strcmp(temp1->Address,Address)==0 || strcmp(Address,"*")==0) &&
+				 (strcmp(temp1->Phone,Phone)==0 || strcmp(Phone,"*")==0)) {
 
 					struct SNAP* temp2 = createSNAP(temp1->StudentId, temp1->Name, temp1->Address, temp1->Phone);
 					temp2->next = snaplist->head;
@@ -459,9 +461,9 @@ struct CSGLIST* lookupCSG(char* Course, char* StudentId, char* Grade, struct CSG
 		for(int i=0; i<B; i++) {
 			struct CSG* temp1 = HASHTABLE_CSG[i].head;
 			while(temp1!=NULL) {
-				if((strcmp(temp1->StudentId,StudentId)==0 || *StudentId == '*') &&
-				 (strcmp(temp1->Course,Course)==0 || *Course == '*') &&
-				 (strcmp(temp1->Grade,Grade)==0 || *Grade == '*')) {
+				if((strcmp(temp1->StudentId,StudentId)==0 || strcmp(StudentId,"*")==0) &&
+				 (strcmp(temp1->Course,Course)==0 || strcmp(Course,"*")==0) &&
+				 (strcmp(temp1->Grade,Grade)==0 || strcmp(Grade,"*")==0)) {
 
 					struct CSG* temp2 = createCSG(temp1->Course, temp1->StudentId, temp1->Grade);
 					temp2->next = CSGlist->head;
@@ -851,13 +853,16 @@ int main() {
 	struct CDH* cdh5 = createCDH("EE200", "W", "1PM");
 	struct CDH* cdh6 = createCDH("EE200", "Th", "10AM");
 
-
 	insertCDH(cdh1, hash_cdh);
 	insertCDH(cdh2, hash_cdh);
 	insertCDH(cdh3, hash_cdh);
 	insertCDH(cdh4, hash_cdh);
 	insertCDH(cdh5, hash_cdh);
 	insertCDH(cdh6, hash_cdh);
+
+	lookupCDH("*","W","*", hash_cdh);
+
+	printf("%s %s lookup \n", lookupCDH("*","W","*", hash_cdh)->head->Day, lookupCDH("*","W","*",hash_cdh)->head->next->Day);
 
 	file_make_CDH(hash_cdh);
 
@@ -873,11 +878,6 @@ int main() {
 
 	grade_lookup("C_Brown", "EE200", hash_snap, hash_csg);
 	location_lookup("C_Brown", "9AM", "M", hash_snap, hash_csg, hash_cdh, hash_cr);
-
-
-
-
-
 
 	/*struct CDH* cdh = createCDH("CS171", "M", "1AM");
 	insertCDH(cdh);
