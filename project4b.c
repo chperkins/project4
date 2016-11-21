@@ -230,17 +230,40 @@ struct CDHLIST* lookupCDH(char Course[], char Day[], char Hour[], struct CDHLIST
 	struct CDHLIST* cdhlist = (struct CDHLIST*) malloc(sizeof(struct CDHLIST));
 		cdhlist->head = NULL;
 		struct CDH* temp;
-		for(int i=0; i<B; i++) {
-			struct CDH* temp1 = HASHTABLE_CDH[i].head;
-			while(temp1!=NULL) {
-				//printf("temp1 course %s %s %s  \n", temp1->Course, temp1->Day, temp1->Hour);
-				if((strcmp(temp1->Course,Course)==0 || strcmp(Course,"*")==0) && (strcmp(temp1->Day,Day)==0 || strcmp(Day,"*")==0) && (strcmp(temp1->Hour,Hour)==0 || strcmp(Hour,"*")==0)) {
-					//printf("got here \n");
-					struct CDH* temp2 = createCDH(temp1->Course, temp1->Day, temp1->Hour);
+		if(strcmp(Course,"*")==0) {
+			for(int i=0; i<B; i++) {
+				struct CDH* temp1 = HASHTABLE_CDH[i].head;
+				while(temp1!=NULL) {
+					//printf("temp1 course %s %s %s  \n", temp1->Course, temp1->Day, temp1->Hour);
+					if((strcmp(temp1->Course,Course)==0 || strcmp(Course,"*")==0) && (strcmp(temp1->Day,Day)==0 || strcmp(Day,"*")==0) && (strcmp(temp1->Hour,Hour)==0 || strcmp(Hour,"*")==0)) {
+						//printf("got here \n");
+						struct CDH* temp2 = createCDH(temp1->Course, temp1->Day, temp1->Hour);
+						temp2->next = cdhlist->head;
+						cdhlist->head = temp2;
+					}
+					temp1=temp1->next;
+				}
+			}
+		}
+
+		else {
+			//printf("1cdh\n");
+			struct CDH* iterator_cdh = HASHTABLE_CDH[hc(Course)].head;
+			//printf("%d %d \n", hc(Course), hc("CS101"));
+			//printf("%s curse room\n", HASHTABLE_CR[296].head->Course);
+			//printf("1\n");
+			while(iterator_cdh!=NULL) {
+				//printf("2cdh\n");
+				//printf("2\n");
+				//printf("%scurse room\n", HASHTABLE_CR[296].head->Room);
+				if((strcmp(iterator_cdh->Day,Day)==0 || strcmp(Day,"*")==0)&&
+				(strcmp(iterator_cdh->Hour,Hour)==0 || strcmp(Hour,"*")==0)) {
+					//printf("3\n");
+					struct CDH* temp2 = createCDH(iterator_cdh->Course, iterator_cdh->Day, iterator_cdh->Hour);
 					temp2->next = cdhlist->head;
 					cdhlist->head = temp2;
 				}
-				temp1=temp1->next;
+				iterator_cdh = iterator_cdh->next;
 			}
 		}
 		return cdhlist;
@@ -254,20 +277,11 @@ void insertCDH(struct CDH* cdh, struct CDHLIST HASHTABLE_CDH[]){
 
 	if(lookupCDH(cdh->Course, cdh->Day, cdh->Hour, HASHTABLE_CDH)->head==NULL) {
 
-		/*printf("not in yet true? |%d| |%p| |%s| |%s| |%s| \n", lookupCDH(cdh->Course, cdh->Day, cdh->Hour)->head==NULL, 
-			lookupCDH(cdh->Course, cdh->Day, cdh->Hour)->head,
-			cdh->Course, cdh->Day, cdh->Hour);*/
-		/*printf("booleans %d %d %d %d %d\n", strcmp(cdh->Course, "CS173"),strcmp(cdh->Day, "W"),strcmp(cdh->Hour, "3AM"), 
-			lookupCDH("CS173", "*","*")->head==NULL,
-			lookupCDH(cdh->Course, "*","*")->head==NULL);*/
-
 		if (HASHTABLE_CDH[hash].head != NULL) {
 
 			struct CDH* temp_CDH = HASHTABLE_CDH[hash].head;
 			HASHTABLE_CDH[hash].head = cdh;
 			cdh->next = temp_CDH;
-			//printf("%s 12 \n", HASHTABLE_CDH[hash].head->Day);
-			//printf("%s 123 \n", HASHTABLE_CDH[hash].head->next->Day);
 		}
 
 		else {
@@ -940,7 +954,7 @@ void grade_lookup(char* name, char* course, struct SNAPLIST HASHTABLE_SNAP[], st
 
 void location_lookup(char* name, char* hour, char* day, struct SNAPLIST HASHTABLE_SNAP[], struct CSGLIST HASHTABLE_CSG[], struct CDHLIST HASHTABLE_CDH[], struct CRLIST HASHTABLE_CR[]);
 void location_lookup(char* name, char* hour, char* day, struct SNAPLIST HASHTABLE_SNAP[], struct CSGLIST HASHTABLE_CSG[], struct CDHLIST HASHTABLE_CDH[], struct CRLIST HASHTABLE_CR[]) {
-	
+	//printf("starting \n");
 	struct SNAPLIST* namesearch = lookupSNAP("*",name,"*","*",HASHTABLE_SNAP);
 	struct SNAP* iterator_snap = namesearch->head;
 	while(iterator_snap!=NULL) {
@@ -954,7 +968,7 @@ void location_lookup(char* name, char* hour, char* day, struct SNAPLIST HASHTABL
 			while(iterator_cdh!=NULL) {
 				struct CRLIST* temp_rooms = lookupCR(iterator_cdh->Course, "*", HASHTABLE_CR);
 				struct CR* iterator_cr = temp_rooms->head;
-				//printf("woah5 %s \n", iterator_cr->Course);
+				printf("woah5 %s \n", iterator_cr->Course);
 				while(iterator_cr!=NULL) {
 					printf("%s is in the room %s.\n", name, iterator_cr->Room);
 					iterator_cr = iterator_cr->next;
@@ -1310,7 +1324,7 @@ int main() {
 	insertCDH(cdh5, hash_cdh);
 	insertCDH(cdh6, hash_cdh);
 
-	deleteCDH("*", "*", "*", hash_cdh);
+	//deleteCDH("*", "*", "*", hash_cdh);
 
 	//lookupCDH("*","W","*", hash_cdh);
 
@@ -1330,7 +1344,7 @@ int main() {
 	insertCR(cr4, hash_cr);
 	insertCR(cr5, hash_cr);
 
-	printf("looking up %s \n", lookupCR("PH100", "*", hash_cr)->head->Room);
+	printf("looking up %s \n", lookupCDH("*", "W", "*", hash_cdh)->head->Course);
 	deleteCR("*", "Newton_bLab", hash_cr);
 
 	file_make_CR(hash_cr);
