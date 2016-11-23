@@ -105,7 +105,7 @@ void insertCR(struct CR* cr, struct CRLIST HASHTABLE_CR[]){
 	}
 }
 
-void deleteCR(char* Course, char* Room, struct CRLIST HASHTABLE_CR[]);
+void t(char* Course, char* Room, struct CRLIST HASHTABLE_CR[]);
 void deleteCR(char* Course, char* Room, struct CRLIST HASHTABLE_CR[]) {
 
 	int hash = hc(Course);
@@ -301,34 +301,18 @@ void deleteCDH(char* Course, char* Day, char* Hour, struct CDHLIST HASHTABLE_CDH
 
 	int hash = hc(Course);
 	int match = 0;
-
-
-
-	//printf("started \n");
-
-
 	if(strcmp(Course, "*")==0) {
 		for(int i=0; i<B; i++) {
 			struct CDH* temp_cdh = HASHTABLE_CDH[i].head;
 			int q = 1;
-			//printf("0000\n");
 			if(temp_cdh!=NULL) {
-				//printf("got5\n");
 				struct CDH* temp_cdh_next = temp_cdh->next;
-				//printf("course room %s %s \n", temp_cr->Course, temp_cr->Room);
 				while(HASHTABLE_CDH[i].head!=NULL && q == 1) {
-					//printf("1111\n");
 					if((strcmp(Course,temp_cdh->Course)==0 || strcmp(Course,"*")==0) 
 						&& (strcmp(Day,temp_cdh->Day)==0 || strcmp(Day, "*")==0)
 						&& (strcmp(Hour, temp_cdh->Hour)==0 || strcmp(Hour, "*")==0)) {
-						//printf("22222\n");
-						//printf("got1\n");
-						//printf("deleting2 %s %s\n", HASHTABLE_CR[i].head->Course, HASHTABLE_CR[i].head->Room);
 						HASHTABLE_CDH[i].head = HASHTABLE_CDH[i].head->next;
-						//printf("33333\n");
 						temp_cdh = HASHTABLE_CDH[i].head;
-						//printf("4444\n");
-						//printf("got2\n");
 					}
 					else {
 						q = 0;
@@ -337,16 +321,12 @@ void deleteCDH(char* Course, char* Day, char* Hour, struct CDHLIST HASHTABLE_CDH
 				if(temp_cdh!=NULL) {
 					temp_cdh_next = temp_cdh->next;
 					while(temp_cdh_next!=NULL) {
-						//printf("got3\n");
 						if((strcmp(temp_cdh_next->Course,Course)==0 || strcmp(Course,"*")==0)
 						 && (strcmp(temp_cdh_next->Day,Day)==0 || strcmp(Day,"*")==0)
 						 && (strcmp(temp_cdh_next->Hour, Hour)==0 || strcmp(Hour, "*")==0) ) {
-							//printf("got4\n");
-							//printf("deleting1 %s %s\n", temp_cr_next->Course, temp_cr_next->Room);
 							temp_cdh->next = temp_cdh_next->next;
 						}
 						if(temp_cdh!=NULL) {
-							//printf("got5\n");
 							temp_cdh = temp_cdh->next;
 							temp_cdh_next = temp_cdh_next->next;
 						}	
@@ -463,10 +443,10 @@ void insertCP(struct CP* cp, struct CPLIST HASHTABLE_CP[]) {
 	}
 }
 
-void deleteCP(struct CP* cp, struct CPLIST HASHTABLE_CP[]);
-void deleteCP(struct CP* cp, struct CPLIST HASHTABLE_CP[]){
-
-	int hash = hc(cp->Course);
+void deleteCP(char *Course, char *Prerequisite, struct CPLIST HASHTABLE_CP[]);
+void deleteCP(char *Course, char *Prerequisite, struct CPLIST HASHTABLE_CP[]){
+/*
+	int hash = hc(Course);
 	int match = 0;
 	struct CP* temp_cp = HASHTABLE_CP[hash].head;
 	struct CP* temp_cp_next = temp_cp->next;
@@ -488,6 +468,90 @@ void deleteCP(struct CP* cp, struct CPLIST HASHTABLE_CP[]){
 			temp_cp_next = temp_cp_next->next;
 		}
 	}
+*/
+
+
+	////////--------------------------------------------
+
+
+
+	int hash = hc(Course);
+	int match = 0;
+	if(strcmp(Course, "*")==0) {
+		for(int i=0; i<B; i++) {
+			struct CP* temp_cp = HASHTABLE_CP[i].head;
+			int q = 1;
+			if(temp_cp!=NULL) {
+				struct CP* temp_cp_next = temp_cp->next;
+				while(HASHTABLE_CP[i].head!=NULL && q == 1) {
+					if((strcmp(Course,temp_cp->Course)==0 || strcmp(Course,"*")==0) 
+						&& (strcmp(Prerequisite,temp_cp->Prerequisite)==0 || strcmp(Prerequisite, "*")==0)) {
+						HASHTABLE_CP[i].head = HASHTABLE_CP[i].head->next;
+						temp_cp = HASHTABLE_CP[i].head;
+					}
+					else {
+						q = 0;
+					}
+				}
+				if(temp_cp!=NULL) {
+					temp_cp_next = temp_cp->next;
+					while(temp_cp_next!=NULL) {
+						if((strcmp(temp_cp_next->Course,Course)==0 || strcmp(Course,"*")==0)
+						 && (strcmp(temp_cp_next->Prerequisite,Prerequisite)==0 || strcmp(Prerequisite,"*")==0) ) {
+							temp_cp->next = temp_cp_next->next;
+						}
+						if(temp_cp!=NULL) {
+							temp_cp = temp_cp->next;
+							temp_cp_next = temp_cp_next->next;
+						}	
+					}				
+				}	
+			}
+		}			
+	}
+
+	else {
+		struct CP* temp_cp = HASHTABLE_CP[hash].head;
+		int q = 1;
+		if(temp_cp!=NULL) {
+			//printf("got5\n");
+			struct CP* temp_cp_next = temp_cp->next;
+				//printf("course room %s %s \n", temp_cdh->Course, temp_cdh->Room);
+			while(HASHTABLE_CP[hash].head!=NULL && q == 1) {
+				//printf("1111\n");
+				if((strcmp(Course,temp_cp->Course)==0 || strcmp(Course,"*")==0)
+				 && (strcmp(Prerequisite,temp_cp->Prerequisite)==0 || strcmp(Prerequisite, "*")==0)) {
+					//printf("22222\n");
+					//printf("got1\n");
+					//printf("deleting2 %s %s\n", HASHTABLE_CDH[hash].head->Course, HASHTABLE_CDH[hash].head->Room);
+					HASHTABLE_CP[hash].head = HASHTABLE_CP[hash].head->next;
+					temp_cp = HASHTABLE_CP[hash].head;
+					//printf("got2\n");
+				}
+				else {
+					q = 0;
+				}
+			}
+			if(temp_cp!=NULL) {
+				temp_cp_next = temp_cp->next;
+				while(temp_cp_next!=NULL) {
+					//printf("got3\n");
+					if((strcmp(temp_cp_next->Course,Course)==0 || strcmp(Course,"*")==0)
+					 && (strcmp(temp_cp_next->Prerequisite,Prerequisite)==0 || strcmp(Prerequisite,"*")==0)) {
+						//printf("got4\n");
+						//printf("deleting1 %s %s\n", temp_cdh_next->Course, temp_cdh_next->Room);
+						temp_cp->next = temp_cp_next->next;
+					}
+					if(temp_cp!=NULL) {
+						//printf("got5\n");
+						temp_cp = temp_cp->next;
+						temp_cp_next = temp_cp_next->next;
+					}	
+				}				
+			}	
+		}
+	}
+	/////////////---------------------
 }
 
 ///-------------SNAP = SNAP------------------------//
@@ -1307,8 +1371,9 @@ int main() {
 	insertCP(cp6, hash_cp);
 	insertCP(cp7, hash_cp);
 	insertCP(cp8, hash_cp);
-
-	file_make_CP(hash_cp);
+	deleteCP("CS205","*", hash_cp);
+	printf("deleting CP, %p\n", lookupCP("*","CS101", hash_cp)->head);
+	/*file_make_CP(hash_cp);
 
 	struct CDH* cdh1 = createCDH("CS101", "M", "9AM");
 	struct CDH* cdh2 = createCDH("CS101", "W", "9AM");
@@ -1322,7 +1387,7 @@ int main() {
 	insertCDH(cdh3, hash_cdh);
 	insertCDH(cdh4, hash_cdh);
 	insertCDH(cdh5, hash_cdh);
-	insertCDH(cdh6, hash_cdh);
+	insertCDH(cdh6, hash_cdh);*/
 
 	//deleteCDH("*", "*", "*", hash_cdh);
 
@@ -1330,7 +1395,7 @@ int main() {
 
 	//printf("%s %s lookup \n", lookupCDH("*","W","*", hash_cdh)->head->Day, lookupCDH("*","W","*",hash_cdh)->head->next->Day);
 
-	file_make_CDH(hash_cdh);
+	//file_make_CDH(hash_cdh);
 
 	struct CR* cr1 = createCR("CS101", "Turing_Aud");
 	struct CR* cr4 = createCR("CS101", "Newton_Lab");
@@ -1344,13 +1409,13 @@ int main() {
 	insertCR(cr4, hash_cr);
 	insertCR(cr5, hash_cr);
 
-	printf("looking up %s \n", lookupCDH("*", "W", "*", hash_cdh)->head->Course);
-	deleteCR("*", "Newton_bLab", hash_cr);
+	//printf("looking up %s \n", lookupCDH("*", "W", "*", hash_cdh)->head->Course);
+	deleteCR("EE200", "Newton_Lab", hash_cr);
+	printf("Helloo deleted item pointer %p\n", lookupCR("*","Newton_Lab", hash_cr)->head);
+	//file_make_CR(hash_cr);
 
-	file_make_CR(hash_cr);
-
-	grade_lookup("C_Brown", "EE200", hash_snap, hash_csg);
-	location_lookup("C_Brown", "9AM", "M", hash_snap, hash_csg, hash_cdh, hash_cr);
+	//grade_lookup("C_Brown", "EE200", hash_snap, hash_csg);
+	//location_lookup("C_Brown", "9AM", "M", hash_snap, hash_csg, hash_cdh, hash_cr);
 
 	//join(hash_csg, hash_snap, hash_csgnap);
 
