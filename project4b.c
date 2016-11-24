@@ -43,12 +43,8 @@ struct CR* createCR(char* Course, char* Room){
 
 struct CRLIST* lookupCR(char* Course, char* Room, struct CRLIST HASHTABLE_CR[]);
 struct CRLIST* lookupCR(char* Course, char* Room, struct CRLIST HASHTABLE_CR[]) {
-
-	//printf("started \n");
 	struct CRLIST* crlist = (struct CRLIST*) malloc(sizeof(struct CRLIST));
 		crlist->head = NULL;
-
-
 		if(strcmp(Course, "*")==0) {
 			for(int i=0; i<B; i++) {
 				struct CR* temp1 = HASHTABLE_CR[i].head;
@@ -65,14 +61,8 @@ struct CRLIST* lookupCR(char* Course, char* Room, struct CRLIST HASHTABLE_CR[]) 
 
 		else {
 			struct CR* iterator_cr = HASHTABLE_CR[hc(Course)].head;
-			//printf("%d %d \n", hc(Course), hc("CS101"));
-			//printf("%s curse room\n", HASHTABLE_CR[296].head->Course);
-			//printf("1\n");
 			while(iterator_cr!=NULL) {
-				//printf("2\n");
-				//printf("%scurse room\n", HASHTABLE_CR[296].head->Room);
 				if(strcmp(iterator_cr->Room,Room)==0 || strcmp(Room,"*")==0) {
-					//printf("3\n");
 					struct CR* temp2 = createCR(iterator_cr->Course, iterator_cr->Room);
 					temp2->next = crlist->head;
 					crlist->head = temp2;
@@ -93,7 +83,6 @@ void insertCR(struct CR* cr, struct CRLIST HASHTABLE_CR[]){
 
 		int hash = hc(cr->Course);
 		if (HASHTABLE_CR[hash].head != NULL) {
-			//printf("here1234\n");
 			struct CR* temp_cr = HASHTABLE_CR[hash].head;
 			HASHTABLE_CR[hash].head = cr;
 			cr->next = temp_cr;
@@ -105,37 +94,22 @@ void insertCR(struct CR* cr, struct CRLIST HASHTABLE_CR[]){
 	}
 }
 
-void t(char* Course, char* Room, struct CRLIST HASHTABLE_CR[]);
+void deleteCR(char* Course, char* Room, struct CRLIST HASHTABLE_CR[]);
 void deleteCR(char* Course, char* Room, struct CRLIST HASHTABLE_CR[]) {
 
 	int hash = hc(Course);
 	int match = 0;
 
-
-
-	//printf("started \n");
-
-
 	if(strcmp(Course, "*")==0) {
 		for(int i=0; i<B; i++) {
 			struct CR* temp_cr = HASHTABLE_CR[i].head;
 			int q = 1;
-			//printf("0000\n");
 			if(temp_cr!=NULL) {
-				//printf("got5\n");
 				struct CR* temp_cr_next = temp_cr->next;
-				printf("course room %s %s \n", temp_cr->Course, temp_cr->Room);
 				while(HASHTABLE_CR[i].head!=NULL && q == 1) {
-					printf("1111\n");
 					if((strcmp(Course,temp_cr->Course)==0 || strcmp(Course,"*")==0) && (strcmp(Room,temp_cr->Room)==0 || strcmp(Room, "*")==0)) {
-						printf("22222\n");
-						//printf("got1\n");
-						printf("deleting2 %s %s\n", HASHTABLE_CR[i].head->Course, HASHTABLE_CR[i].head->Room);
 						HASHTABLE_CR[i].head = HASHTABLE_CR[i].head->next;
-						printf("33333\n");
 						temp_cr = HASHTABLE_CR[i].head;
-						printf("4444\n");
-						//printf("got2\n");
 					}
 					else {
 						q = 0;
@@ -144,14 +118,10 @@ void deleteCR(char* Course, char* Room, struct CRLIST HASHTABLE_CR[]) {
 				if(temp_cr!=NULL) {
 					temp_cr_next = temp_cr->next;
 					while(temp_cr_next!=NULL) {
-						//printf("got3\n");
 						if((strcmp(temp_cr_next->Course,Course)==0 || strcmp(Course,"*")==0) && (strcmp(temp_cr_next->Room,Room)==0 || strcmp(Room,"*")==0) ) {
-							//printf("got4\n");
-							printf("deleting1 %s %s\n", temp_cr_next->Course, temp_cr_next->Room);
 							temp_cr->next = temp_cr_next->next;
 						}
 						if(temp_cr!=NULL) {
-							//printf("got5\n");
 							temp_cr = temp_cr->next;
 							temp_cr_next = temp_cr_next->next;
 						}	
@@ -165,18 +135,12 @@ void deleteCR(char* Course, char* Room, struct CRLIST HASHTABLE_CR[]) {
 		struct CR* temp_cr = HASHTABLE_CR[hash].head;
 		int q = 1;
 		if(temp_cr!=NULL) {
-			//printf("got5\n");
 			struct CR* temp_cr_next = temp_cr->next;
-				printf("course room %s %s \n", temp_cr->Course, temp_cr->Room);
 			while(HASHTABLE_CR[hash].head!=NULL && q == 1) {
-				printf("1111\n");
 				if((strcmp(Course,temp_cr->Course)==0 || strcmp(Course,"*")==0) && (strcmp(Room,temp_cr->Room)==0 || strcmp(Room, "*")==0)) {
-					printf("22222\n");
-					//printf("got1\n");
-					printf("deleting2 %s %s\n", HASHTABLE_CR[hash].head->Course, HASHTABLE_CR[hash].head->Room);
+					
 					HASHTABLE_CR[hash].head = HASHTABLE_CR[hash].head->next;
 					temp_cr = HASHTABLE_CR[hash].head;
-					//printf("got2\n");
 				}
 				else {
 					q = 0;
@@ -185,14 +149,10 @@ void deleteCR(char* Course, char* Room, struct CRLIST HASHTABLE_CR[]) {
 			if(temp_cr!=NULL) {
 				temp_cr_next = temp_cr->next;
 				while(temp_cr_next!=NULL) {
-					//printf("got3\n");
 					if((strcmp(temp_cr_next->Course,Course)==0 || strcmp(Course,"*")==0) && (strcmp(temp_cr_next->Room,Room)==0 || strcmp(Room,"*")==0) ) {
-						//printf("got4\n");
-						printf("deleting1 %s %s\n", temp_cr_next->Course, temp_cr_next->Room);
 						temp_cr->next = temp_cr_next->next;
 					}
 					if(temp_cr!=NULL) {
-						//printf("got5\n");
 						temp_cr = temp_cr->next;
 						temp_cr_next = temp_cr_next->next;
 					}	
@@ -234,9 +194,7 @@ struct CDHLIST* lookupCDH(char Course[], char Day[], char Hour[], struct CDHLIST
 			for(int i=0; i<B; i++) {
 				struct CDH* temp1 = HASHTABLE_CDH[i].head;
 				while(temp1!=NULL) {
-					//printf("temp1 course %s %s %s  \n", temp1->Course, temp1->Day, temp1->Hour);
 					if((strcmp(temp1->Course,Course)==0 || strcmp(Course,"*")==0) && (strcmp(temp1->Day,Day)==0 || strcmp(Day,"*")==0) && (strcmp(temp1->Hour,Hour)==0 || strcmp(Hour,"*")==0)) {
-						//printf("got here \n");
 						struct CDH* temp2 = createCDH(temp1->Course, temp1->Day, temp1->Hour);
 						temp2->next = cdhlist->head;
 						cdhlist->head = temp2;
@@ -247,18 +205,11 @@ struct CDHLIST* lookupCDH(char Course[], char Day[], char Hour[], struct CDHLIST
 		}
 
 		else {
-			//printf("1cdh\n");
-			struct CDH* iterator_cdh = HASHTABLE_CDH[hc(Course)].head;
-			//printf("%d %d \n", hc(Course), hc("CS101"));
-			//printf("%s curse room\n", HASHTABLE_CR[296].head->Course);
-			//printf("1\n");
+			struct CDH* iterator_cdh = HASHTABLE_CDH[hc(Course)].head;	
 			while(iterator_cdh!=NULL) {
-				//printf("2cdh\n");
-				//printf("2\n");
-				//printf("%scurse room\n", HASHTABLE_CR[296].head->Room);
+				
 				if((strcmp(iterator_cdh->Day,Day)==0 || strcmp(Day,"*")==0)&&
 				(strcmp(iterator_cdh->Hour,Hour)==0 || strcmp(Hour,"*")==0)) {
-					//printf("3\n");
 					struct CDH* temp2 = createCDH(iterator_cdh->Course, iterator_cdh->Day, iterator_cdh->Hour);
 					temp2->next = cdhlist->head;
 					cdhlist->head = temp2;
@@ -402,8 +353,7 @@ struct CP* createCP(char* Course, char* Prerequisite){
 }
 struct CPLIST* lookupCP(char Course[], char Prerequisite[], struct CPLIST HASHTABLE_CP[]);//lookup prerequisites for course
 struct CPLIST* lookupCP(char* Course, char* Prerequisite, struct CPLIST HASHTABLE_CP[]){//lookup prerequisites for course
-	/*int hash = hc(Course );
-	return &HASHTABLE_CP[hash];*/
+	
 	//////////////
 
 	struct CPLIST* cplist = (struct CPLIST*) malloc(sizeof(struct CPLIST));
@@ -445,30 +395,6 @@ void insertCP(struct CP* cp, struct CPLIST HASHTABLE_CP[]) {
 
 void deleteCP(char *Course, char *Prerequisite, struct CPLIST HASHTABLE_CP[]);
 void deleteCP(char *Course, char *Prerequisite, struct CPLIST HASHTABLE_CP[]){
-/*
-	int hash = hc(Course);
-	int match = 0;
-	struct CP* temp_cp = HASHTABLE_CP[hash].head;
-	struct CP* temp_cp_next = temp_cp->next;
-
-	if(strcmp(cp->Course,temp_cp->Course)==0 && strcmp(cp->Prerequisite,temp_cp->Prerequisite)==0) {
-		HASHTABLE_CP[hash].head = HASHTABLE_CP[hash].head->next;
-		match=1;
-	}
-	while(temp_cp_next!=NULL && match == 0) {
-		if (strcmp(temp_cp_next->Course,cp->Course)==0 && strcmp(temp_cp_next->Prerequisite,cp->Prerequisite)==0) {
-			//printf("cp->course %s, cp->pre %s\n", cp->Course, cp->Prerequisite);
-			//printf("temp_cp_next %s %s\n", temp_cp_next->Course, temp_cp_next->Prerequisite);
-			//printf("temp_cp is %s, temp_cp_next is %s\n", temp_cp->Prerequisite, temp_cp_next->Prerequisite);
-			temp_cp->next = temp_cp_next->next;
-			match=1;
-		}
-		else {
-			temp_cp = temp_cp->next;
-			temp_cp_next = temp_cp_next->next;
-		}
-	}
-*/
 
 
 	////////--------------------------------------------
@@ -514,19 +440,12 @@ void deleteCP(char *Course, char *Prerequisite, struct CPLIST HASHTABLE_CP[]){
 		struct CP* temp_cp = HASHTABLE_CP[hash].head;
 		int q = 1;
 		if(temp_cp!=NULL) {
-			//printf("got5\n");
 			struct CP* temp_cp_next = temp_cp->next;
-				//printf("course room %s %s \n", temp_cdh->Course, temp_cdh->Room);
 			while(HASHTABLE_CP[hash].head!=NULL && q == 1) {
-				//printf("1111\n");
 				if((strcmp(Course,temp_cp->Course)==0 || strcmp(Course,"*")==0)
 				 && (strcmp(Prerequisite,temp_cp->Prerequisite)==0 || strcmp(Prerequisite, "*")==0)) {
-					//printf("22222\n");
-					//printf("got1\n");
-					//printf("deleting2 %s %s\n", HASHTABLE_CDH[hash].head->Course, HASHTABLE_CDH[hash].head->Room);
 					HASHTABLE_CP[hash].head = HASHTABLE_CP[hash].head->next;
 					temp_cp = HASHTABLE_CP[hash].head;
-					//printf("got2\n");
 				}
 				else {
 					q = 0;
@@ -535,15 +454,11 @@ void deleteCP(char *Course, char *Prerequisite, struct CPLIST HASHTABLE_CP[]){
 			if(temp_cp!=NULL) {
 				temp_cp_next = temp_cp->next;
 				while(temp_cp_next!=NULL) {
-					//printf("got3\n");
 					if((strcmp(temp_cp_next->Course,Course)==0 || strcmp(Course,"*")==0)
 					 && (strcmp(temp_cp_next->Prerequisite,Prerequisite)==0 || strcmp(Prerequisite,"*")==0)) {
-						//printf("got4\n");
-						//printf("deleting1 %s %s\n", temp_cdh_next->Course, temp_cdh_next->Room);
 						temp_cp->next = temp_cp_next->next;
 					}
 					if(temp_cp!=NULL) {
-						//printf("got5\n");
 						temp_cp = temp_cp->next;
 						temp_cp_next = temp_cp_next->next;
 					}	
@@ -580,39 +495,6 @@ struct SNAP* createSNAP(char* StudentId, char* Name, char* Address, char* Phone)
 
 void deleteSNAP( char *StudentId, char *Name, char *Address, char *Phone, struct SNAPLIST HASHTABLE_SNAP[]);
 void deleteSNAP( char *StudentId, char *Name, char *Address, char *Phone, struct SNAPLIST HASHTABLE_SNAP[]){
-
-	/*int hash = hc(snap->StudentId);
-	int match = 0;
-	struct SNAP* temp_snap = HASHTABLE_SNAP[hash].head;
-	struct SNAP* temp_snap_next = temp_snap->next;
-
-	if(strcmp(snap->StudentId,temp_snap->StudentId)==0 &&
-		 strcmp(snap->Name,temp_snap->Name)==0 &&
-		 strcmp(snap->Address,temp_snap->Address)==0 &&
-		 strcmp(snap->Phone,temp_snap->Phone)==0) {
-
-		HASHTABLE_SNAP[hash].head = HASHTABLE_SNAP[hash].head->next;
-		match=1;
-	}
-	while(temp_snap_next!=NULL && match == 0) {
-		if(strcmp(snap->StudentId,temp_snap_next->StudentId)==0 &&
-		 	strcmp(snap->Name,temp_snap_next->Name)==0 &&
-		 	strcmp(snap->Address,temp_snap_next->Address)==0 &&
-		 	strcmp(snap->Phone,temp_snap_next->Phone)==0) {
-			//printf("cp->course %s, cp->pre %s\n", cp->Course, cp->Prerequisite);
-			//printf("temp_cp_next %s %s\n", temp_cp_next->Course, temp_cp_next->Prerequisite);
-			//printf("temp_cp is %s, temp_cp_next is %s\n", temp_cp->Prerequisite, temp_cp_next->Prerequisite);
-			temp_snap->next = temp_snap_next->next;
-			match=1;
-		}
-		else {
-			temp_snap = temp_snap->next;
-			temp_snap_next = temp_snap_next->next;
-		}
-	}
-*/
-
-
 	////---------------------------------------
 	
 	int hash = hc(StudentId);
@@ -667,12 +549,8 @@ void deleteSNAP( char *StudentId, char *Name, char *Address, char *Phone, struct
 				 && (strcmp(Name,temp_snap->Name)==0 || strcmp(Name, "*")==0)
 				 && (strcmp(Address, temp_snap->Address)==0 || strcmp(Address, "*")==0)
 				 && (strcmp(Phone, temp_snap->Phone)==0 || strcmp(Phone, "*")==0)) {
-					//printf("22222\n");
-					//printf("got1\n");
-					//printf("deleting2 %s %s\n", HASHTABLE_CDH[hash].head->Course, HASHTABLE_CDH[hash].head->Room);
 					HASHTABLE_SNAP[hash].head = HASHTABLE_SNAP[hash].head->next;
 					temp_snap = HASHTABLE_SNAP[hash].head;
-					//printf("got2\n");
 				}
 				else {
 					q = 0;
@@ -681,17 +559,13 @@ void deleteSNAP( char *StudentId, char *Name, char *Address, char *Phone, struct
 			if(temp_snap!=NULL) {
 				temp_snap_next = temp_snap->next;
 				while(temp_snap_next!=NULL) {
-					//printf("got3\n");
 					if((strcmp(temp_snap_next->StudentId,StudentId)==0 || strcmp(StudentId,"*")==0)
 					 && (strcmp(temp_snap_next->Name,Name)==0 || strcmp(Name,"*")==0) 
 					 && (strcmp(temp_snap_next->Address,Address)==0 || strcmp(Address,"*")==0)
 					 && (strcmp(temp_snap_next->Phone, Phone)==0 || strcmp(Phone,"*")==0)) {
-						//printf("got4\n");
-						//printf("deleting1 %s %s\n", temp_cdh_next->Course, temp_cdh_next->Room);
 						temp_snap->next = temp_snap_next->next;
 					}
 					if(temp_snap!=NULL) {
-						//printf("got5\n");
 						temp_snap = temp_snap->next;
 						temp_snap_next = temp_snap_next->next;
 					}	
