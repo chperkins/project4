@@ -578,10 +578,10 @@ struct SNAP* createSNAP(char* StudentId, char* Name, char* Address, char* Phone)
 	return x;
 }
 
-void deleteSNAP(struct SNAP* snap, struct SNAPLIST HASHTABLE_SNAP[]);
-void deleteSNAP(struct SNAP* snap, struct SNAPLIST HASHTABLE_SNAP[]){
+void deleteSNAP( char *StudentId, char *Name, char *Address, char *Phone, struct SNAPLIST HASHTABLE_SNAP[]);
+void deleteSNAP( char *StudentId, char *Name, char *Address, char *Phone, struct SNAPLIST HASHTABLE_SNAP[]){
 
-	int hash = hc(snap->StudentId);
+	/*int hash = hc(snap->StudentId);
 	int match = 0;
 	struct SNAP* temp_snap = HASHTABLE_SNAP[hash].head;
 	struct SNAP* temp_snap_next = temp_snap->next;
@@ -609,7 +609,97 @@ void deleteSNAP(struct SNAP* snap, struct SNAPLIST HASHTABLE_SNAP[]){
 			temp_snap = temp_snap->next;
 			temp_snap_next = temp_snap_next->next;
 		}
-	}	
+	}
+*/
+
+
+	////---------------------------------------
+	
+	int hash = hc(StudentId);
+	int match = 0;
+	if(strcmp(StudentId, "*")==0) {
+		for(int i=0; i<B; i++) {
+			struct SNAP* temp_snap = HASHTABLE_SNAP[i].head;
+			int q = 1;
+			if(temp_snap!=NULL) {
+				struct SNAP* temp_snap_next = temp_snap->next;
+				while(HASHTABLE_SNAP[i].head!=NULL && q == 1) {
+					if((strcmp(StudentId,temp_snap->StudentId)==0 || strcmp(StudentId,"*")==0) 
+						&& (strcmp(Name,temp_snap->Name)==0 || strcmp(Name, "*")==0)
+						&& (strcmp(Address, temp_snap->Address)==0 || strcmp(Address, "*")==0)
+						&& (strcmp(Phone, temp_snap->Phone)==0 || strcmp(Phone, "*")==0)) {
+						HASHTABLE_SNAP[i].head = HASHTABLE_SNAP[i].head->next;
+						temp_snap = HASHTABLE_SNAP[i].head;
+					}
+					else {
+						q = 0;
+					}
+				}
+				if(temp_snap!=NULL) {
+					temp_snap_next = temp_snap->next;
+					while(temp_snap_next!=NULL) {
+						if((strcmp(temp_snap_next->StudentId,StudentId)==0 || strcmp(StudentId,"*")==0)
+						 && (strcmp(temp_snap_next->Name,Name)==0 || strcmp(Name,"*")==0)
+						 && (strcmp(temp_snap_next->Address, Address)==0 || strcmp(Address, "*")==0) 
+						 && (strcmp(temp_snap_next->Phone, Phone)==0 || strcmp(Phone, "*")==0)) {
+							temp_snap->next = temp_snap_next->next;
+						}
+						if(temp_snap!=NULL) {
+							temp_snap = temp_snap->next;
+							temp_snap_next = temp_snap_next->next;
+						}	
+					}				
+				}	
+			}
+		}			
+	}
+
+	else {
+		struct SNAP* temp_snap = HASHTABLE_SNAP[hash].head;
+		int q = 1;
+		if(temp_snap!=NULL) {
+			//printf("got5\n");
+			struct SNAP* temp_snap_next = temp_snap->next;
+				//printf("course room %s %s \n", temp_cdh->Course, temp_cdh->Room);
+			while(HASHTABLE_SNAP[hash].head!=NULL && q == 1) {
+				//printf("1111\n");
+				if((strcmp(StudentId,temp_snap->StudentId)==0 || strcmp(StudentId,"*")==0)
+				 && (strcmp(Name,temp_snap->Name)==0 || strcmp(Name, "*")==0)
+				 && (strcmp(Address, temp_snap->Address)==0 || strcmp(Address, "*")==0)
+				 && (strcmp(Phone, temp_snap->Phone)==0 || strcmp(Phone, "*")==0)) {
+					//printf("22222\n");
+					//printf("got1\n");
+					//printf("deleting2 %s %s\n", HASHTABLE_CDH[hash].head->Course, HASHTABLE_CDH[hash].head->Room);
+					HASHTABLE_SNAP[hash].head = HASHTABLE_SNAP[hash].head->next;
+					temp_snap = HASHTABLE_SNAP[hash].head;
+					//printf("got2\n");
+				}
+				else {
+					q = 0;
+				}
+			}
+			if(temp_snap!=NULL) {
+				temp_snap_next = temp_snap->next;
+				while(temp_snap_next!=NULL) {
+					//printf("got3\n");
+					if((strcmp(temp_snap_next->StudentId,StudentId)==0 || strcmp(StudentId,"*")==0)
+					 && (strcmp(temp_snap_next->Name,Name)==0 || strcmp(Name,"*")==0) 
+					 && (strcmp(temp_snap_next->Address,Address)==0 || strcmp(Address,"*")==0)
+					 && (strcmp(temp_snap_next->Phone, Phone)==0 || strcmp(Phone,"*")==0)) {
+						//printf("got4\n");
+						//printf("deleting1 %s %s\n", temp_cdh_next->Course, temp_cdh_next->Room);
+						temp_snap->next = temp_snap_next->next;
+					}
+					if(temp_snap!=NULL) {
+						//printf("got5\n");
+						temp_snap = temp_snap->next;
+						temp_snap_next = temp_snap_next->next;
+					}	
+				}				
+			}	
+		}
+	}
+		//=------------------------------------
 }
 
 struct SNAPLIST* lookupSNAP(char* StudentId, char* Name, char* Address, char* Phone, struct SNAPLIST HASHTABLE_SNAP[]);
@@ -1351,7 +1441,9 @@ int main() {
 	insertSNAP(snap1, hash_snap);
 	insertSNAP(snap2, hash_snap);
 	insertSNAP(snap3, hash_snap);
-
+	deleteSNAP("22222", "*", "*", "*", hash_snap);
+	printf("Deleted pointer %p\n", lookupSNAP("*", "*", "56_Grape_Blvd", "555-9999", hash_snap)->head);
+/*
 	file_make_SNAP(hash_snap);
 
 	struct CP* cp1 = createCP("CS101", "CS100");
@@ -1373,6 +1465,7 @@ int main() {
 	insertCP(cp8, hash_cp);
 	deleteCP("CS205","*", hash_cp);
 	printf("deleting CP, %p\n", lookupCP("*","CS101", hash_cp)->head);
+	*/
 	/*file_make_CP(hash_cp);
 
 	struct CDH* cdh1 = createCDH("CS101", "M", "9AM");
@@ -1396,7 +1489,7 @@ int main() {
 	//printf("%s %s lookup \n", lookupCDH("*","W","*", hash_cdh)->head->Day, lookupCDH("*","W","*",hash_cdh)->head->next->Day);
 
 	//file_make_CDH(hash_cdh);
-
+/*
 	struct CR* cr1 = createCR("CS101", "Turing_Aud");
 	struct CR* cr4 = createCR("CS101", "Newton_Lab");
 	struct CR* cr5 = createCR("CS101", "def");
@@ -1413,7 +1506,7 @@ int main() {
 	deleteCR("EE200", "Newton_Lab", hash_cr);
 	printf("Helloo deleted item pointer %p\n", lookupCR("*","Newton_Lab", hash_cr)->head);
 	//file_make_CR(hash_cr);
-
+*/
 	//grade_lookup("C_Brown", "EE200", hash_snap, hash_csg);
 	//location_lookup("C_Brown", "9AM", "M", hash_snap, hash_csg, hash_cdh, hash_cr);
 
