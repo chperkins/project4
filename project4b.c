@@ -1573,6 +1573,19 @@ int main() {
 	insertCP(createCP("MTH99", "MTH98"), hash_cp);
 	printf("Trying to insert CS101 Turing_Aud to CR, but nothing will happen since its a duplicate:\n");
 	insertCR(createCR("CS101", "Turing_Aud"), hash_cr);
+
+	printf("Looking up C_Brown in SNAP:\n");
+	struct SNAP* tempSnap = lookupSNAP("*", "C_Brown", "*", "*", hash_snap)->head;
+	printf("%s %s %s %s\n", tempSnap->StudentId, tempSnap->Name, tempSnap->Address, tempSnap->Phone);
+	printf("Looking up PH100 in CR:\n");
+	struct CR* tempCr = lookupCR("PH100", "*", hash_cr)->head;
+	printf("%s %s\n", tempCr->Course, tempCr->Room);
+
+	printf("Deleting P_Patty from SNAP:\n");
+	deleteSNAP("*", "P_Patty", "*", "*", hash_snap);
+	printf("Deleting all of CS101 from CSG:\n");
+	deleteCSG("CS101", "*", "*", hash_csg);
+	printf("Deletes may be check in the output tables.\n");
 	file_make_CSG(hash_csg);
 	file_make_SNAP(hash_snap);
 	file_make_CP(hash_cp);
