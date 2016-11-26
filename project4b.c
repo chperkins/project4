@@ -590,7 +590,7 @@ struct SNAPLIST* lookupSNAP(char* StudentId, char* Name, char* Address, char* Ph
 		struct SNAPLIST* snaplist = (struct SNAPLIST*) malloc(sizeof(struct SNAPLIST));
 		snaplist->head = NULL;
 		struct SNAP* temp;
-	if (strcmp(StudentId, "*")!=0){
+	if (strcmp(StudentId, "*")!=0) {
 		int hash = hc(StudentId);
 
 		struct SNAP* temp1 = HASHTABLE_SNAP[hash].head;
@@ -1517,7 +1517,8 @@ int main() {
 	printf("\n-------Project 4 - Charlie Perkins and Lillian Ludford-------\n");
 	printf("\nThis program loads items into each table through the ***_table_in.txt files.\n");
 	printf("They are set by default to have the defaults from the book,\nbut they can be modified.\n");
-	printf("The project will show parts 2 and 3 first and 1 last\n so that we can demonstrate the delete function better.\n");
+	printf("The project will show parts 2 and 3 first and 1 last\n so that we can demonstrate the delete function.\n\n");
+	printf("For the table, spaces are replaced by _ and .'s are removed from the addresses.\n");
 
 
 	file_read_CSG(hash_csg);
@@ -1526,18 +1527,52 @@ int main() {
 	file_read_CDH(hash_cdh);
 	file_read_CR(hash_cr);
 
-	selection(hash_csg, hash_csg_select, "CS101", "*", "*");
-	projection(hash_csg_select, hash_s);
+	printf("Part 2\n");
+	char name[100];
+	char class[100];
+	printf("For grade_lookup, please input the name and then the class (press enter after each):\n");
+	scanf("%s", name);
+	scanf("%s", class);
+	grade_lookup(name, class, hash_snap, hash_csg);
+	printf("\n");
 
-	grade_lookup("C_Brown", "EE200", hash_snap, hash_csg);
-	location_lookup("C_Brown", "9AM", "M", hash_snap, hash_csg, hash_cdh, hash_cr);
+	char name2[100];
+	char hour[100];
+	char day[100];
+	printf("For location_lookup, please input the name, the hour, and then the day.\n");
+	scanf("%s", name2);
+	scanf("%s", hour);
+	scanf("%s", day);
+	location_lookup(name2, hour, day, hash_snap, hash_csg, hash_cdh, hash_cr);
+	printf("\n");
+
+	printf("Part 3. This section does the examples from the book and prints them out.\n");
+
+	selection(hash_csg, hash_csg_select, "CS101", "*", "*");
+	printf("\n");
+	projection(hash_csg_select, hash_s);
+	printf("\n");
 
 
 	join(hash_cr, hash_cdh, hash_crdh);
+	printf("\n");
 
 	selectionCRDH(hash_crdh, hash_crdh_select, "*", "Turing_Aud", "*", "*");
+	printf("\n");
 	projectionDH(hash_crdh_select, hash_dh);
+	printf("\n");
 
+	printf("Part 1\n");
+	printf("The program will lookup a few things, insert a few things,\nand then delete a few things.\n");
+	printf("The ***_table_out.txt files may be checked to confirm the inserts and deletes");
+
+
+	printf("Inserting PH100 Th 5PM to CDH:\n");
+	insertCDH(createCDH("PH100", "Th", "5PM"), hash_cdh);
+	printf("Inserting MTH 99 MTH 98 to CP:");
+	insertCP(createCP("MTH99", "MTH98"), hash_cp);
+	printf("Trying to insert CS101 Turing_Aud to CR, but nothing will happen since its a duplicate:\n");
+	insertCR(createCR("CS101", "Turing_Aud"), hash_cr);
 	file_make_CSG(hash_csg);
 	file_make_SNAP(hash_snap);
 	file_make_CP(hash_cp);
