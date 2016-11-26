@@ -805,7 +805,7 @@ void insertCSG(struct CSG* csg, struct CSGLIST HASHTABLE_CSG[B]) {//use STUDENT 
 void file_make_CR(struct CRLIST HASHTABLE_CR[]);
 void file_make_CR(struct CRLIST HASHTABLE_CR[]) {
 	FILE *database;
-	database = fopen("CR_table.txt", "w");
+	database = fopen("CR_table_out.txt", "w");
 	fprintf(database, "Course Room\n");
 	for(int i=0; i<B; i++) {
 		struct CR* new_CR = HASHTABLE_CR[i].head;
@@ -820,7 +820,7 @@ void file_make_CR(struct CRLIST HASHTABLE_CR[]) {
 void file_make_CDH(struct CDHLIST HASHTABLE_CDH[]);
 void file_make_CDH(struct CDHLIST HASHTABLE_CDH[]) {
 	FILE *database;
-	database = fopen("CDH_table.txt", "w");
+	database = fopen("CDH_table_out.txt", "w");
 	fprintf(database, "Course Day Hour\n");
 	for(int i=0; i<B; i++) {
 		struct CDH* new_CDH = HASHTABLE_CDH[i].head;
@@ -837,7 +837,7 @@ void file_make_CP(struct CPLIST HASHTABLE_CP[]);
 void file_make_CP(struct CPLIST HASHTABLE_CP[]) {
 
 	FILE *database;
-	database = fopen("CP_table.txt", "w");
+	database = fopen("CP_table_out.txt", "w");
 	fprintf(database, "Course Prerequisite\n");
 	for(int i=0; i<B; i++) {
 		struct CP* new_CP = HASHTABLE_CP[i].head;
@@ -852,7 +852,7 @@ void file_make_CP(struct CPLIST HASHTABLE_CP[]) {
 void file_make_SNAP(struct SNAPLIST HASHTABLE_SNAP[]);
 void file_make_SNAP(struct SNAPLIST HASHTABLE_SNAP[]) {
 	FILE *database;
-	database = fopen("SNAP_table.txt", "w");
+	database = fopen("SNAP_table_out.txt", "w");
 	fprintf(database, "StudentId Name Address Phone\n");
 	for(int i=0; i<B; i++) {
 		struct SNAP* new_SNAP = HASHTABLE_SNAP[i].head;
@@ -868,7 +868,7 @@ void file_make_CSG(struct CSGLIST HASHTABLE_CSG[]);
 void file_make_CSG(struct CSGLIST HASHTABLE_CSG[]) {
 
 	FILE *database;
-	database = fopen("CSG_table.txt", "w");
+	database = fopen("CSG_table_out.txt", "w");
 	fprintf(database, "Course Student Grade\n");
 	for(int i=0; i<B; i++) {
 		struct CSG* new_CSG = HASHTABLE_CSG[i].head;
@@ -892,7 +892,7 @@ void file_read_CDH(struct CDHLIST HASHTABLE_CDH[]) {
 
 	int i=0;
 
-	FILE* database = fopen("CDH_table.txt", "r");
+	FILE* database = fopen("CDH_table_in.txt", "r");
 
 	while(lol) {
 		course[i]=malloc(1000 * sizeof(char *));
@@ -921,7 +921,7 @@ void file_read_CR(struct CRLIST HASHTABLE_CR[]) {
 
 	int i=0;
 
-	FILE* database = fopen("CR_table.txt", "r");
+	FILE* database = fopen("CR_table_in.txt", "r");
 
 	while(lol) {
 		course[i]=malloc(1000 * sizeof(char *));
@@ -950,7 +950,7 @@ void file_read_CP(struct CPLIST HASHTABLE_CP[]) {
 
 	int i=0;
 
-	FILE* database = fopen("CP_table.txt", "r");
+	FILE* database = fopen("CP_table_in.txt", "r");
 
 	while(lol) {
 		course[i]=malloc(1000 * sizeof(char *));
@@ -981,7 +981,7 @@ void file_read_SNAP(struct SNAPLIST HASHTABLE_SNAP[]) {
 
 	int i=0;
 
-	FILE* database = fopen("SNAP_table.txt", "r");
+	FILE* database = fopen("SNAP_table_in.txt", "r");
 
 	while(lol) {
 		sid[i]=malloc(1000 * sizeof(char *));
@@ -1013,7 +1013,7 @@ void file_read_CSG(struct CSGLIST HASHTABLE_CSG[]) {
 
 	int i=0;
 
-	FILE* database = fopen("CSG_table.txt", "r");
+	FILE* database = fopen("CSG_table_in.txt", "r");
 
 	while(lol) {
 		course[i]=malloc(1000 * sizeof(char *));
@@ -1435,23 +1435,16 @@ void selectionCRDH(struct CRDHLIST hash1[], struct CRDHLIST hash2[], char* cours
 
 	int v=0;
 	struct CRDHLIST* crdhlist1 = lookupCRDH(course, room, day, hour, hash1);
-	printf("looking up in selection %p \n", crdhlist1->head->next);
 	struct CRDH* iterator_crdh = crdhlist1->head;
-	printf("lookiing up again %p \n", iterator_crdh->next);
 	while(iterator_crdh!=NULL) {
-		printf("lookiing up 3 %p \n", iterator_crdh->next);	
 		struct CRDH* temp_crdh = (struct CRDH*) malloc (sizeof(struct CRDH));
 		temp_crdh->Course = iterator_crdh->Course;
 		temp_crdh->Day = iterator_crdh->Day;
 		temp_crdh->Hour = iterator_crdh->Hour;
 		temp_crdh->Room = iterator_crdh->Room;	
 		insertCRDH(temp_crdh, hash2);
-		printf("lookiing up 4 %p \n", iterator_crdh->next);
 		iterator_crdh = iterator_crdh->next;
-		//printf("lookiing up 4 %p \n", iterator_crdh->next);
-		printf("\n%p pointer \n", iterator_crdh);
 		v++;
-		printf("\n %d number of times \n", v);
 	}
 
 	printf("SELECTION OF CRDH for Course = %s, Room = %s, Day = %s, Hour = %s\n", course, room, day, hour);
@@ -1521,83 +1514,20 @@ int main() {
 		hash_dh[i].head=NULL;
 	}
 
-	struct CSG* csg1 = createCSG("CS101", "12345", "A");
-	struct CSG* csg2 = createCSG("CS101", "67890", "B");
-	struct CSG* csg3 = createCSG("EE200", "12345", "C");
-	struct CSG* csg4 = createCSG("EE200", "22222", "B+");
-	struct CSG* csg5 = createCSG("CS101", "33333", "A-");
-	struct CSG* csg6 = createCSG("PH100", "67890", "C+");
+	printf("\n-------Project 4 - Charlie Perkins and Lillian Ludford-------\n");
+	printf("\nThis program loads items into each table through the ***_table_in.txt files.\n");
+	printf("They are set by default to have the defaults from the book,\nbut they can be modified.\n");
+	printf("The project will show parts 2 and 3 first and 1 last\n so that we can demonstrate the delete function better.\n");
 
 
-	insertCSG(csg1, hash_csg);
-	insertCSG(csg2, hash_csg);
-	insertCSG(csg3, hash_csg);
-	insertCSG(csg4, hash_csg);
-	insertCSG(csg5, hash_csg);
-	insertCSG(csg6, hash_csg);
+	file_read_CSG(hash_csg);
+	file_read_SNAP(hash_snap);
+	file_read_CP(hash_cp);
+	file_read_CDH(hash_cdh);
+	file_read_CR(hash_cr);
 
 	selection(hash_csg, hash_csg_select, "CS101", "*", "*");
 	projection(hash_csg_select, hash_s);
-
-	file_make_CSG(hash_csg_select);
-
-	struct SNAP* snap1 = createSNAP("12345", "C_Brown", "12_Apple_St", "555-1234");
-	struct SNAP* snap2 = createSNAP("67890", "L_Van_Pelt", "34_Pear_Ave", "555-5678");
-	struct SNAP* snap3 = createSNAP("22222", "P_Patty", "56_Grape_Blvd", "555-9999");
-
-	insertSNAP(snap1, hash_snap);
-	insertSNAP(snap2, hash_snap);
-	insertSNAP(snap3, hash_snap);
-	deleteSNAP("22222", "*", "*", "*", hash_snap);
-
-	file_make_SNAP(hash_snap);
-
-	struct CP* cp1 = createCP("CS101", "CS100");
-	struct CP* cp2 = createCP("EE200", "EE005");
-	struct CP* cp3 = createCP("EE200", "CS100");
-	struct CP* cp4 = createCP("CS120", "CS101");
-	struct CP* cp5 = createCP("CS121", "CS120");
-	struct CP* cp6 = createCP("CS205", "CS101");
-	struct CP* cp7 = createCP("CS206", "CS121");
-	struct CP* cp8 = createCP("CS206", "CS205");
-
-	insertCP(cp1, hash_cp);
-	insertCP(cp2, hash_cp);
-	insertCP(cp3, hash_cp);
-	insertCP(cp4, hash_cp);
-	insertCP(cp5, hash_cp);
-	insertCP(cp6, hash_cp);
-	insertCP(cp7, hash_cp);
-	insertCP(cp8, hash_cp);
-	file_make_CP(hash_cp);
-
-	printf("this one %s\n", lookupCP("CS101", "*", hash_cp)->head->Prerequisite);
-
-	struct CDH* cdh1 = createCDH("CS101", "M", "9AM");
-	struct CDH* cdh2 = createCDH("CS101", "W", "9AM");
-	struct CDH* cdh3 = createCDH("CS101", "F", "9AM");
-	struct CDH* cdh4 = createCDH("EE200", "Tu", "10AM");
-	struct CDH* cdh5 = createCDH("EE200", "W", "1PM");
-	struct CDH* cdh6 = createCDH("EE200", "Th", "10AM");
-
-	insertCDH(cdh1, hash_cdh);
-	insertCDH(cdh2, hash_cdh);
-	insertCDH(cdh3, hash_cdh);
-	insertCDH(cdh4, hash_cdh);
-	insertCDH(cdh5, hash_cdh);
-	insertCDH(cdh6, hash_cdh);
-
-	file_make_CDH(hash_cdh);
-
-	struct CR* cr1 = createCR("CS101", "Turing_Aud");
-	struct CR* cr2 = createCR("EE200", "25_Ohm_Hall");
-	struct CR* cr3 = createCR("PH100", "Newton_Lab");
-
-	insertCR(cr1, hash_cr);
-	insertCR(cr2, hash_cr);
-	insertCR(cr3, hash_cr);
-
-	file_make_CR(hash_cr);
 
 	grade_lookup("C_Brown", "EE200", hash_snap, hash_csg);
 	location_lookup("C_Brown", "9AM", "M", hash_snap, hash_csg, hash_cdh, hash_cr);
@@ -1606,6 +1536,13 @@ int main() {
 	join(hash_cr, hash_cdh, hash_crdh);
 
 	selectionCRDH(hash_crdh, hash_crdh_select, "*", "Turing_Aud", "*", "*");
+	projectionDH(hash_crdh_select, hash_dh);
+
+	file_make_CSG(hash_csg);
+	file_make_SNAP(hash_snap);
+	file_make_CP(hash_cp);
+	file_make_CDH(hash_cdh);
+	file_make_CR(hash_cr);
 
 	return 0;
 

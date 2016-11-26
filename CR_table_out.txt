@@ -1,0 +1,4 @@
+Course Room
+EE200 25_Ohm_Hall
+CS101 Turing_Aud
+PH100 Newton_Lab
