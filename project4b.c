@@ -1564,12 +1564,12 @@ int main() {
 
 	printf("Part 1\n");
 	printf("The program will lookup a few things, insert a few things,\nand then delete a few things.\n");
-	printf("The ***_table_out.txt files may be checked to confirm the inserts and deletes");
+	printf("The ***_table_out.txt files may be checked to confirm the inserts and deletes.\n");
 
 
 	printf("Inserting PH100 Th 5PM to CDH:\n");
 	insertCDH(createCDH("PH100", "Th", "5PM"), hash_cdh);
-	printf("Inserting MTH 99 MTH 98 to CP:");
+	printf("Inserting MTH 99 MTH 98 to CP:\n");
 	insertCP(createCP("MTH99", "MTH98"), hash_cp);
 	printf("Trying to insert CS101 Turing_Aud to CR, but nothing will happen since its a duplicate:\n");
 	insertCR(createCR("CS101", "Turing_Aud"), hash_cr);
