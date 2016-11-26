@@ -62,7 +62,8 @@ struct CRLIST* lookupCR(char* Course, char* Room, struct CRLIST HASHTABLE_CR[]) 
 		else {
 			struct CR* iterator_cr = HASHTABLE_CR[hc(Course)].head;
 			while(iterator_cr!=NULL) {
-				if(strcmp(iterator_cr->Room,Room)==0 || strcmp(Room,"*")==0) {
+				if((strcmp(iterator_cr->Room,Room)==0 || strcmp(Room,"*")==0) &&
+					(strcmp(iterator_cr->Course,Course)==0 || strcmp(Course,"*")==0)) {
 					struct CR* temp2 = createCR(iterator_cr->Course, iterator_cr->Room);
 					temp2->next = crlist->head;
 					crlist->head = temp2;
@@ -209,7 +210,8 @@ struct CDHLIST* lookupCDH(char Course[], char Day[], char Hour[], struct CDHLIST
 			while(iterator_cdh!=NULL) {
 				
 				if((strcmp(iterator_cdh->Day,Day)==0 || strcmp(Day,"*")==0)&&
-				(strcmp(iterator_cdh->Hour,Hour)==0 || strcmp(Hour,"*")==0)) {
+				(strcmp(iterator_cdh->Hour,Hour)==0 || strcmp(Hour,"*")==0)&&
+				(strcmp(iterator_cdh->Course,Course)==0|| strcmp(Course,"*")==0)) {
 					struct CDH* temp2 = createCDH(iterator_cdh->Course, iterator_cdh->Day, iterator_cdh->Hour);
 					temp2->next = cdhlist->head;
 					cdhlist->head = temp2;
@@ -238,12 +240,6 @@ void insertCDH(struct CDH* cdh, struct CDHLIST HASHTABLE_CDH[]){
 		else {
 			HASHTABLE_CDH[hash].head = cdh;
 		}
-	}
-	else {
-		/*printf("already in \n");
-		printf("not in yet true? |%d| |%p| |%s| |%s| |%s| \n", lookupCDH(cdh->Course, cdh->Day, cdh->Hour)->head==NULL, 
-			lookupCDH(cdh->Course, cdh->Day, cdh->Hour)->head,
-			cdh->Course, cdh->Day, cdh->Hour);*/
 	}
 
 }
@@ -353,26 +349,7 @@ struct CP* createCP(char* Course, char* Prerequisite){
 }
 struct CPLIST* lookupCP(char Course[], char Prerequisite[], struct CPLIST HASHTABLE_CP[]);//lookup prerequisites for course
 struct CPLIST* lookupCP(char* Course, char* Prerequisite, struct CPLIST HASHTABLE_CP[]){//lookup prerequisites for course
-	
-	//////////////
 
-	/*struct CPLIST* cplist = (struct CPLIST*) malloc(sizeof(struct CPLIST));
-		cplist->head = NULL;
-		struct CP* temp;
-		for(int i=0; i<B; i++) {
-			struct CP* temp1 = HASHTABLE_CP[i].head;
-			while(temp1!=NULL) {
-				if((strcmp(temp1->Course,Course)==0 || strcmp(Course,"*")==0) && (strcmp(temp1->Prerequisite,Prerequisite)==0 || strcmp(Prerequisite,"*")==0) ) {
-					struct CP* temp2 = createCP(temp1->Course, temp1->Prerequisite);
-					temp2->next = cplist->head;
-					cplist->head = temp2;
-				}
-				temp1=temp1->next;
-			}
-		}
-	return cplist;*/
-
-	/////
 	struct CPLIST* cplist = (struct CPLIST*) malloc(sizeof(struct CPLIST));
 		cplist->head = NULL;
 		struct CP* temp;
@@ -609,33 +586,7 @@ void deleteSNAP( char *StudentId, char *Name, char *Address, char *Phone, struct
 
 struct SNAPLIST* lookupSNAP(char* StudentId, char* Name, char* Address, char* Phone, struct SNAPLIST HASHTABLE_SNAP[]);
 struct SNAPLIST* lookupSNAP(char* StudentId, char* Name, char* Address, char* Phone, struct SNAPLIST HASHTABLE_SNAP[]){//lookup with the SNAP
-	/*int hash = hc(Course );
-	return &HASHTABLE_CP[hash];*/
-	//////////////
 
-	/*UNTESTED*/
-
-	/*struct SNAPLIST* snaplist = (struct SNAPLIST*) malloc(sizeof(struct SNAPLIST));
-		snaplist->head = NULL;
-		struct SNAP* temp;
-		for(int i=0; i<B; i++) {
-			struct SNAP* temp1 = HASHTABLE_SNAP[i].head;
-			while(temp1!=NULL) {
-				if((strcmp(temp1->StudentId,StudentId)==0 || strcmp(StudentId,"*")==0) &&
-				 (strcmp(temp1->Name,Name)==0 || strcmp(Name,"*")==0) &&
-				 (strcmp(temp1->Address,Address)==0 || strcmp(Address,"*")==0) &&
-				 (strcmp(temp1->Phone,Phone)==0 || strcmp(Phone,"*")==0)) {
-
-					struct SNAP* temp2 = createSNAP(temp1->StudentId, temp1->Name, temp1->Address, temp1->Phone);
-					temp2->next = snaplist->head;
-					snaplist->head = temp2;
-				}
-				temp1=temp1->next;
-			}
-		}
-	return snaplist;*/
-
-	/////
 		struct SNAPLIST* snaplist = (struct SNAPLIST*) malloc(sizeof(struct SNAPLIST));
 		snaplist->head = NULL;
 		struct SNAP* temp;
@@ -713,35 +664,76 @@ struct CSG* createCSG(char* Course, char* StudentId, char* Grade) {
 	return x;
 }
 
-void deleteCSG(struct CSG* csg, struct CSGLIST HASHTABLE_CSG[B]);
-void deleteCSG(struct CSG* csg, struct CSGLIST HASHTABLE_CSG[B]){
+void deleteCSG(char* Course, char* StudentId, char* Grade, struct CSGLIST HASHTABLE_CSG[B]);
+void deleteCSG(char* Course, char* StudentId, char* Grade, struct CSGLIST HASHTABLE_CSG[B]){
 
-	int hash = hc(csg->Course);
-
+	int hash = hc(Course);
 	int match = 0;
-	struct CSG* temp_csg = HASHTABLE_CSG[hash].head;
-	struct CSG* temp_csg_next = temp_csg->next;
-
-	if(strcmp(csg->Course,temp_csg->Course)==0 &&
-		 strcmp(csg->StudentId,temp_csg->StudentId)==0 &&
-		 strcmp(csg->Grade,temp_csg->Grade)==0) {
-
-		HASHTABLE_CSG[hash].head = HASHTABLE_CSG[hash].head->next;
-		match=1;
+	if(strcmp(Course, "*")==0) {
+		for(int i=0; i<B; i++) {
+			struct CSG* temp_csg = HASHTABLE_CSG[i].head;
+			int q = 1;
+			if(temp_csg!=NULL) {
+				struct CSG* temp_csg_next = temp_csg->next;
+				while(HASHTABLE_CSG[i].head!=NULL && q == 1) {
+					if((strcmp(Course,temp_csg->Course)==0 || strcmp(Course,"*")==0) 
+						&& (strcmp(StudentId,temp_csg->StudentId)==0 || strcmp(StudentId, "*")==0)
+						&& (strcmp(Grade, temp_csg->Grade)==0 || strcmp(Grade, "*")==0)) {
+						HASHTABLE_CSG[i].head = HASHTABLE_CSG[i].head->next;
+						temp_csg= HASHTABLE_CSG[i].head;
+					}
+					else {
+						q = 0;
+					}
+				}
+				if(temp_csg!=NULL) {
+					temp_csg_next = temp_csg->next;
+					while(temp_csg_next!=NULL) {
+						if((strcmp(temp_csg_next->Course,Course)==0 || strcmp(Course,"*")==0)
+						 && (strcmp(temp_csg_next->StudentId,StudentId)==0 || strcmp(StudentId,"*")==0)
+						 && (strcmp(temp_csg_next->Grade, Grade)==0 || strcmp(Grade, "*")==0) ) {
+							temp_csg->next = temp_csg_next->next;
+						}
+						if(temp_csg!=NULL) {
+							temp_csg = temp_csg->next;
+							temp_csg_next = temp_csg_next->next;
+						}	
+					}				
+				}	
+			}
+		}			
 	}
-	while(temp_csg_next!=NULL && match == 0) {
-		if (strcmp(csg->Course,temp_csg_next->Course)==0 &&
-		 strcmp(csg->StudentId,temp_csg_next->StudentId)==0 &&
-		 strcmp(csg->Grade,temp_csg_next->Grade)==0) {
-			//printf("cdh->course %s, cp->pre %s\n", cdh->Course, cdh->Hour);
-			//printf("temp_cdh_next %s %s\n", temp_cdh_next->Course, temp_cdh_next->Hour);
-			//printf("temp_cdh is %s, temp_cdh_next is %s\n", temp_cdh->Hour, temp_cdh_next->Hour);
-			temp_csg->next = temp_csg_next->next;
-			match=1;
-		}
-		else {
-			temp_csg = temp_csg->next;
-			temp_csg_next = temp_csg_next->next;
+
+	else {
+		struct CSG* temp_csg = HASHTABLE_CSG[hash].head;
+		int q = 1;
+		if(temp_csg!=NULL) {
+			struct CSG* temp_csg_next = temp_csg->next;
+			while(HASHTABLE_CSG[hash].head!=NULL && q == 1) {
+				if((strcmp(Course,temp_csg->Course)==0 || strcmp(Course,"*")==0)
+				 && (strcmp(StudentId,temp_csg->StudentId)==0 || strcmp(StudentId, "*")==0)
+				 && (strcmp(Grade, temp_csg->Grade)==0 || strcmp(Grade, "*")==0)) {
+					HASHTABLE_CSG[hash].head = HASHTABLE_CSG[hash].head->next;
+					temp_csg = HASHTABLE_CSG[hash].head;
+				}
+				else {
+					q = 0;
+				}
+			}
+			if(temp_csg!=NULL) {
+				temp_csg_next = temp_csg->next;
+				while(temp_csg_next!=NULL) {
+					if((strcmp(temp_csg_next->Course,Course)==0 || strcmp(Course,"*")==0)
+					 && (strcmp(temp_csg_next->StudentId,StudentId)==0 || strcmp(StudentId,"*")==0) 
+					 && (strcmp(temp_csg_next->Grade,Grade)==0 || strcmp(Grade,"*")==0)) {
+						temp_csg->next = temp_csg_next->next;
+					}
+					if(temp_csg!=NULL) {
+						temp_csg = temp_csg->next;
+						temp_csg_next = temp_csg_next->next;
+					}	
+				}				
+			}	
 		}
 	}
 
@@ -749,26 +741,7 @@ void deleteCSG(struct CSG* csg, struct CSGLIST HASHTABLE_CSG[B]){
 struct CSGLIST* lookupCSG(char* Course, char* StudentId, char* Grade, struct CSGLIST HASHTABLE_CSG[B]);
 struct CSGLIST* lookupCSG(char* Course, char* StudentId, char* Grade, struct CSGLIST HASHTABLE_CSG[B]){//lookup with the SNAP
 
-/*	struct CSGLIST* CSGlist = (struct CSGLIST*) malloc(sizeof(struct CSGLIST));
-
-		CSGlist->head = NULL;
-		struct CSG* temp;
-		for(int i=0; i<B; i++) {
-			struct CSG* temp1 = HASHTABLE_CSG[i].head;
-			while(temp1!=NULL) {
-				if((strcmp(temp1->StudentId,StudentId)==0 || strcmp(StudentId,"*")==0) &&
-				 (strcmp(temp1->Course,Course)==0 || strcmp(Course,"*")==0) &&
-				 (strcmp(temp1->Grade,Grade)==0 || strcmp(Grade,"*")==0)) {
-
-					struct CSG* temp2 = createCSG(temp1->Course, temp1->StudentId, temp1->Grade);
-					temp2->next = CSGlist->head;
-					CSGlist->head = temp2;
-				}
-				temp1=temp1->next;
-			}
-		}
-	return CSGlist;*/
-			struct CSGLIST* csglist = (struct CSGLIST*) malloc(sizeof(struct CSGLIST));
+		struct CSGLIST* csglist = (struct CSGLIST*) malloc(sizeof(struct CSGLIST));
 		csglist->head = NULL;
 		struct CSG* temp;
 	if (strcmp(Course, "*")!=0){
@@ -1094,9 +1067,8 @@ void location_lookup(char* name, char* hour, char* day, struct SNAPLIST HASHTABL
 			while(iterator_cdh!=NULL) {
 				struct CRLIST* temp_rooms = lookupCR(iterator_cdh->Course, "*", HASHTABLE_CR);
 				struct CR* iterator_cr = temp_rooms->head;
-				printf("woah5 %s \n", iterator_cr->Course);
 				while(iterator_cr!=NULL) {
-					printf("%s is in the room %s.\n", name, iterator_cr->Room);
+					printf("%s is in the room %s at %s on %s.\n", name, iterator_cr->Room, hour, day);
 					iterator_cr = iterator_cr->next;
 				}
 				iterator_cdh = iterator_cdh->next;
@@ -1163,231 +1135,355 @@ void selection(struct CSGLIST hash1[], struct CSGLIST hash2[], char* course, cha
 		insertCSG(iterator_csg, hash2);
 		iterator_csg = iterator_csg->next;
 	}
+
+	printf("SELECTION OF CSG for Course = %s, StudentId = %s, Grade = %s\n", course, studentid, grade);
+	printf("Course StudentId Grade\n");
+	for(int i=0; i<B; i++) {
+		struct CSG* iterator_csg = hash2[i].head;
+		while(iterator_csg!=NULL) {
+			printf("%s %s %s\n",iterator_csg->Course, iterator_csg->StudentId, iterator_csg->Grade);
+			iterator_csg = iterator_csg->next;
+		}
+	}	
 }
 
 
-typedef struct CS *CSLIST;
-struct CS {
-	char* Course;
+typedef struct S *SLIST;
+struct S {
 	char* StudentId;
 
-	CSLIST next;
+	SLIST next;
 };
-struct CSLIST{
-	struct CS* head;
+struct SLIST{
+	struct S* head;
 };
 
-struct CS* createCS(char* Course, char* StudentId);
-struct CS* createCS(char* Course, char* StudentId) {
-	struct CS* x = (struct CS*) malloc(sizeof(struct CS));
-	x->Course=Course;
+struct S* createS(char* StudentId);
+struct S* createS(char* StudentId) {
+	struct S* x = (struct S*) malloc(sizeof(struct S));
 	x->StudentId=StudentId;
 	x->next = NULL;
 	return x;
 }
 
 
-struct CSLIST* lookupCS(char* Course, char* StudentId, struct CSLIST HASHTABLE_CS[]);//lookup prerequisites for course
-struct CSLIST* lookupCS(char* Course, char* StudentId, struct CSLIST HASHTABLE_CS[]){//lookup prerequisites for course
-	/*int hash = hc(Course );
-	return &HASHTABLE_CP[hash];*/
-	//////////////
+struct SLIST* lookupS(char* StudentId, struct SLIST HASHTABLE_S[]);//lookup prerequisites for course
+struct SLIST* lookupS(char* StudentId, struct SLIST HASHTABLE_S[]){//lookup prerequisites for course
 
-	/*struct CSLIST* cslist = (struct CSLIST*) malloc(sizeof(struct CSLIST));
-		cslist->head = NULL;
-		struct CS* temp;
-		for(int i=0; i<B; i++) {
-			struct CS* temp1 = HASHTABLE_CS[i].head;
-			while(temp1!=NULL) {
-				if((strcmp(temp1->Course,Course)==0 || strcmp(Course,"*")==0) && (strcmp(temp1->StudentId,StudentId)==0 || strcmp(StudentId,"*")==0) ) {
-					struct CS* temp2 = createCS(temp1->Course, temp1->StudentId);
-					temp2->next = cslist->head;
-					cslist->head = temp2;
-				}
-				temp1=temp1->next;
-			}
-		}
-	return cslist;*/
+		struct SLIST* slist = (struct SLIST*) malloc(sizeof(struct SLIST));
+		slist->head = NULL;
+		struct S* temp;
 
-	/////
-		struct CSLIST* cslist = (struct CSLIST*) malloc(sizeof(struct CSLIST));
-		cslist->head = NULL;
-		struct CS* temp;
+	if (strcmp(StudentId, "*")!=0){
+		int hash = hc(StudentId);
 
-	if (strcmp(Course, "*")!=0){
-		int hash = hc(Course);
-
-		struct CS* temp1 = HASHTABLE_CS[hash].head;
+		struct S* temp1 = HASHTABLE_S[hash].head;
 		while(temp1!=NULL) {
-			if((strcmp(temp1->Course,Course)==0 || strcmp(Course, "*")==0) && (strcmp(temp1->StudentId,StudentId)==0 || strcmp(StudentId, "*")==0)) {
-				struct CS* temp2 = createCS(temp1->Course, temp1->StudentId);
-				temp2->next = cslist->head;
-				cslist->head = temp2;
+			if((strcmp(temp1->StudentId,StudentId)==0 || strcmp(StudentId, "*")==0)) {
+				struct S* temp2 = createS(temp1->StudentId);
+				temp2->next = slist->head;
+				slist->head = temp2;
 			}
 			temp1=temp1->next;
 		}
 	}
 	else {
 		for(int i=0; i<B; i++) {
-			struct CS* temp1 = HASHTABLE_CS[i].head;
+			struct S* temp1 = HASHTABLE_S[i].head;
 			while(temp1!=NULL) {
-				if((strcmp(temp1->Course,Course)==0 || strcmp(Course,"*")==0) && (strcmp(temp1->StudentId,StudentId)==0 || strcmp(StudentId,"*")==0) ) {
-					struct CS* temp2 = createCS(temp1->Course, temp1->StudentId);
-					temp2->next = cslist->head;
-					cslist->head = temp2;
+				if((strcmp(temp1->StudentId,StudentId)==0 || strcmp(StudentId,"*")==0) ) {
+					struct S* temp2 = createS(temp1->StudentId);
+					temp2->next = slist->head;
+					slist->head = temp2;
 				}
 				temp1=temp1->next;
 			}
 		}
 	}
-	return cslist;
+	return slist;
 }
 
-void insertCS(struct CS* cs, struct CSLIST HASHTABLE_CS[]);
-void insertCS(struct CS* cs, struct CSLIST HASHTABLE_CS[]) {
+void insertS(struct S* s, struct SLIST HASHTABLE_S[]);
+void insertS(struct S* s, struct SLIST HASHTABLE_S[]) {
 
-	if(lookupCS(cs->Course, cs->StudentId, HASHTABLE_CS)->head==NULL) {
+	if(lookupS(s->StudentId, HASHTABLE_S)->head==NULL) {
 
-		int hash = hc(cs->Course);
-		if (HASHTABLE_CS[hash].head != NULL) {
-			struct CS* temp_CS = HASHTABLE_CS[hash].head;
-			HASHTABLE_CS[hash].head = cs;
-			cs->next = temp_CS;
+		int hash = hc(s->StudentId);
+		if (HASHTABLE_S[hash].head != NULL) {
+			struct S* temp_S = HASHTABLE_S[hash].head;
+			HASHTABLE_S[hash].head = s;
+			s->next = temp_S;
 		}
 		else {
-			HASHTABLE_CS[hash].head = cs;
-			HASHTABLE_CS[hash].head->next = NULL;
+			HASHTABLE_S[hash].head = s;
+			HASHTABLE_S[hash].head->next = NULL;
 		}
 	}
 }
 
-void projection(struct CSGLIST hashin[], struct CSLIST hashout[]);
-void projection(struct CSGLIST hashin[], struct CSLIST hashout[]) {
+void projection(struct CSGLIST hashin[], struct SLIST hashout[]);
+void projection(struct CSGLIST hashin[], struct SLIST hashout[]) {
 
 	printf("\nPROJECTION OF CSG ONTO CS\n");
-	printf("Course StudentId\n");
+	printf("StudentId\n");
 
 	for(int i=0; i<B; i++) {
 		struct CSG* iterator_csg = hashin[i].head;
 		while(iterator_csg!=NULL) {
-			insertCS(createCS(iterator_csg->Course, iterator_csg->StudentId), hashout);
+			insertS(createS(iterator_csg->StudentId), hashout);
 			iterator_csg = iterator_csg->next;
 		}
 	}
 
 	for(int i=0; i<B; i++) {
-		struct CS* iterator_cs = hashout[i].head;
-		while(iterator_cs!=NULL) {
-			printf("%s %s\n", iterator_cs->Course, iterator_cs->StudentId);
-			iterator_cs = iterator_cs->next;
+		struct S* iterator_s = hashout[i].head;
+		while(iterator_s!=NULL) {
+			printf("%s\n",iterator_s->StudentId);
+			iterator_s = iterator_s->next;
 		}
 	}
 }
 
-typedef struct CSGNAP *CSGNAPLIST;
-struct CSGNAP{
+typedef struct CRDH *CRDHLIST;
+struct CRDH {
 	char* Course;
-	char* StudentId;
-	char* Grade;
-	char* Name;
-	char* Address;
-	char* Phone;
-	CSGNAPLIST next;
+	char* Room;
+	char* Day;
+	char* Hour;
+	CRDHLIST next;
 };
-struct CSGNAPLIST{
-	struct CSGNAP* head;
+struct CRDHLIST{
+	struct CRDH* head;
 };
 
-struct CSGNAP* createCSGNAP(char* Course, char* StudentId, char* Grade, char* Name, char* Address, char* Phone);
-struct CSGNAP* createCSGNAP(char* Course, char* StudentId, char* Grade, char* Name, char* Address, char* Phone) {
-	struct CSGNAP* x = (struct CSGNAP*) malloc(sizeof(struct CSGNAP));
+struct CRDH* createCRDH(char* Course, char* Room, char* Day, char* Hour);
+struct CRDH* createCRDH(char* Course, char* Room, char* Day, char* Hour) {
+	struct CRDH* x = (struct CRDH*) malloc(sizeof(struct CRDH));
 	x->Course=Course;
-	x->StudentId=StudentId;
-	x->Grade = Grade;
-	x->Name = Name;
-	x->Address = Address;
-	x->Phone = Phone;
+	x->Room=Room;
+	x->Day=Day;
+	x->Hour=Hour;
 	x->next = NULL;
 	return x;
 }
 
 
-struct CSGNAPLIST* lookupCSGNAP(char* Course, char* StudentId, char* Grade, char* Name, char* Address, char* Phone, struct CSGNAPLIST HASHTABLE_CSGNAP[]);//lookup prerequisites for course
-struct CSGNAPLIST* lookupCSGNAP(char* Course, char* StudentId, char* Grade, char* Name, char* Address, char* Phone, struct CSGNAPLIST HASHTABLE_CSGNAP[]){//lookup prerequisites for course
+struct CRDHLIST* lookupCRDH(char* Course, char* Room, char* Day, char* Hour, struct CRDHLIST HASHTABLE_CRDH[]);//lookup prerequisites for course
+struct CRDHLIST* lookupCRDH(char* Course, char* Room, char* Day, char* Hour, struct CRDHLIST HASHTABLE_CRDH[]) {//lookup prerequisites for course
 
-	struct CSGNAPLIST* csgnaplist = (struct CSGNAPLIST*) malloc(sizeof(struct CSGNAPLIST));
-		csgnaplist->head = NULL;
-		struct CSGNAP* temp;
+		struct CRDHLIST* crdhlist = (struct CRDHLIST*) malloc(sizeof(struct CRDHLIST));
+		crdhlist->head = NULL;
+		struct CRDH* temp;
+	if (strcmp(Course, "*")!=0){
+		int hash = hc(Course);
+
+		struct CRDH* temp1 = HASHTABLE_CRDH[hash].head;
+		while(temp1!=NULL) {
+			if( (strcmp(temp1->Room,Room)==0 || strcmp(Room, "*")==0) && (strcmp(temp1->Day, Day)==0 || strcmp(Day, "*")==0) && (strcmp(temp1->Hour, Hour)==0 || strcmp(Hour, "*")==0)) {
+				struct CRDH* temp2 = createCRDH(temp1->Course, temp1->Room, temp1->Day, temp1->Hour);
+				temp2->next = crdhlist->head;
+				crdhlist->head = temp2;
+			}
+			temp1=temp1->next;
+		}
+	}
+	else {
 		for(int i=0; i<B; i++) {
-			struct CSGNAP* temp1 = HASHTABLE_CSGNAP[i].head;
+			struct CRDH* temp1 = HASHTABLE_CRDH[i].head;
 			while(temp1!=NULL) {
-				if((strcmp(temp1->Course,Course)==0 || strcmp(Course,"*")==0) && 
-					(strcmp(temp1->StudentId,StudentId)==0 || strcmp(StudentId,"*")==0) &&
-					(strcmp(temp1->Grade,Grade)==0 || strcmp(Grade,"*")==0) &&
-					(strcmp(temp1->Name,Name)==0 || strcmp(Name,"*")==0) &&
-					(strcmp(temp1->Address,Address)==0 || strcmp(Address,"*")==0) &&
-					(strcmp(temp1->Phone,Phone)==0 || strcmp(Phone,"*")==0)) {
-					struct CSGNAP* temp2 = createCSGNAP(temp1->Course, temp1->StudentId, temp1->Grade, temp1->Name, temp1->Address, temp1->Phone);
-					temp2->next = csgnaplist->head;
-					csgnaplist->head = temp2;
+				if((strcmp(temp1->Course,Course)==0 || strcmp(Course,"*")==0) &&
+				 (strcmp(temp1->Room,Room)==0 || strcmp(Room,"*")==0) &&
+				 (strcmp(temp1->Day,Day)==0 || strcmp(Day,"*")==0) &&
+				 (strcmp(temp1->Hour,Hour)==0 || strcmp(Hour,"*")==0)) {
+
+					struct CRDH* temp2 = createCRDH(temp1->Course, temp1->Room, temp1->Day, temp1->Hour);
+					temp2->next = crdhlist->head;
+					crdhlist->head = temp2;
 				}
 				temp1=temp1->next;
 			}
 		}
-	return csgnaplist;
+	}
+	return crdhlist;
+}
+
+void insertCRDH(struct CRDH* crdh, struct CRDHLIST HASHTABLE_CRDH[]);
+void insertCRDH(struct CRDH* crdh, struct CRDHLIST HASHTABLE_CRDH[]) {
+
+	if(lookupCRDH(crdh->Course,crdh->Room, crdh->Day, crdh->Hour, HASHTABLE_CRDH)->head==NULL) {
+		printf("success\n");
+		int hash = hc(crdh->Course);
+		if (HASHTABLE_CRDH[hash].head != NULL) {
+			struct CRDH* temp_CRDH = HASHTABLE_CRDH[hash].head;
+			HASHTABLE_CRDH[hash].head = crdh;
+			crdh->next = temp_CRDH;
+		}
+		else {
+			HASHTABLE_CRDH[hash].head = crdh;
+			HASHTABLE_CRDH[hash].head->next = NULL;
+		}
+	}
+
+	else {
+		printf("oops\n");
+	}
+}
+
+void join(struct CRLIST HASHTABLE_CR[], struct CDHLIST HASHTABLE_CDH[], struct CRDHLIST HASHTABLE_CRDH[]);
+void join(struct CRLIST HASHTABLE_CR[], struct CDHLIST HASHTABLE_CDH[], struct CRDHLIST HASHTABLE_CRDH[]) {
+
+	for(int i=0; i<B; i++) {
+		struct  CR* iterator_cr = HASHTABLE_CR[i].head;
+		while(iterator_cr!=NULL) {
+			char* a = iterator_cr->Course;
+			struct CDHLIST* cdhlist = lookupCDH(a, "*", "*", HASHTABLE_CDH);
+			struct CDH* iterator_cdh = cdhlist->head;
+			while(iterator_cdh!=NULL) {
+				struct CRDH* tempcrdh = createCRDH(iterator_cr->Course, iterator_cr->Room, iterator_cdh->Day,
+				 iterator_cdh->Hour);
+				insertCRDH(tempcrdh, HASHTABLE_CRDH);
+				iterator_cdh = iterator_cdh->next;
+			}
+			iterator_cr = iterator_cr->next;
+		}
+	}
+
+	printf("\nJOINING CR and CDH\n");
+	printf("Course Room Day Hour\n");
+
+	for(int i=0; i<B; i++) {
+		struct CRDH* iterator_crdh = HASHTABLE_CRDH[i].head;
+		while(iterator_crdh!=NULL) {
+			printf("%s %s %s %s\n", iterator_crdh->Course, iterator_crdh->Room,
+				iterator_crdh->Day, iterator_crdh->Hour);
+			iterator_crdh= iterator_crdh->next;
+		}
+	}
+}
+
+typedef struct DH *DHLIST;
+struct DH {
+	char* Day;
+	char* Hour;
+	DHLIST next;
+};
+struct DHLIST {
+	struct DH* head;
+};
+
+struct DH* createDH(char* Day, char* Hour);
+struct DH* createDH(char* Day, char* Hour){
+	struct DH* x = (struct DH*) malloc(sizeof(struct DH));
+	x->Day = Day;
+	x->Hour = Hour;
+	x->next = NULL;
+	return x;
+}
+
+struct DHLIST* lookupDH(char* Day, char* Hour, struct DHLIST HASHTABLE_DH[]);
+struct DHLIST* lookupDH(char* Day, char* Hour, struct DHLIST HASHTABLE_DH[]) {
+	struct DHLIST* dhlist = (struct DHLIST*) malloc(sizeof(struct DHLIST));
+		dhlist->head = NULL;
+		if(strcmp(Day, "*")==0) {
+			for(int i=0; i<B; i++) {
+				struct DH* temp1 = HASHTABLE_DH[i].head;
+				while(temp1!=NULL) {
+					if((strcmp(temp1->Day,Day)==0 || strcmp(Day,"*")==0) && (strcmp(temp1->Hour,Hour)==0 || strcmp(Hour,"*")==0) ) {
+						struct DH* temp2 = createDH(temp1->Day, temp1->Hour);
+						temp2->next = dhlist->head;
+						dhlist->head = temp2;
+					}
+					temp1=temp1->next;
+				}
+			}			
+		}
+
+		else {
+			struct DH* iterator_dh = HASHTABLE_DH[hc(Day)].head;
+			while(iterator_dh!=NULL) {
+				if((strcmp(iterator_dh->Day,Day)==0 || strcmp(Day,"*")==0) &&
+					(strcmp(iterator_dh->Hour, Hour)==0 || strcmp(Hour,"*")==0)) {
+					struct DH* temp2 = createDH(iterator_dh->Day, iterator_dh->Hour);
+					temp2->next = dhlist->head;
+					dhlist->head = temp2;
+				}
+				iterator_dh = iterator_dh->next;
+			}
+		}
+
+	return dhlist;
 
 	/////
 }
 
-void insertCSGNAP(struct CSGNAP* csgnap, struct CSGNAPLIST HASHTABLE_CSGNAP[]);
-void insertCSGNAP(struct CSGNAP* csgnap, struct CSGNAPLIST HASHTABLE_CSGNAP[]) {
+void insertDH(struct DH* dh, struct DHLIST HASHTABLE_DH[]);
+void insertDH(struct DH* dh, struct DHLIST HASHTABLE_DH[]){
 
-	if(lookupCSGNAP(csgnap->Course, csgnap->StudentId, csgnap->Grade, csgnap->Name, csgnap->Address, csgnap->Phone, HASHTABLE_CSGNAP)->head==NULL) {
+	if(lookupDH(dh->Day, dh->Hour, HASHTABLE_DH)->head==NULL) {
 
-		int hash = hc(csgnap->Course);
-		if (HASHTABLE_CSGNAP[hash].head != NULL) {
-			struct CSGNAP* temp_CSGNAP = HASHTABLE_CSGNAP[hash].head;
-			HASHTABLE_CSGNAP[hash].head = csgnap;
-			csgnap->next = temp_CSGNAP;
+		int hash = hc(dh->Day);
+		if (HASHTABLE_DH[hash].head != NULL) {
+			struct DH* temp_dh = HASHTABLE_DH[hash].head;
+			HASHTABLE_DH[hash].head = dh;
+			dh->next = temp_dh;
 		}
 		else {
-			HASHTABLE_CSGNAP[hash].head = csgnap;
-			HASHTABLE_CSGNAP[hash].head->next = NULL;
+			HASHTABLE_DH[hash].head = dh;
+			HASHTABLE_DH[hash].head->next = NULL;
 		}
 	}
 }
 
-void join(struct CSGLIST HASHTABLE_CSG[], struct SNAPLIST HASHTABLE_SNAP[], struct CSGNAPLIST HASHTABLE_CSGNAP[]);
-void join(struct CSGLIST HASHTABLE_CSG[], struct SNAPLIST HASHTABLE_SNAP[], struct CSGNAPLIST HASHTABLE_CSGNAP[]) {
+void selectionCRDH(struct CRDHLIST hash1[], struct CRDHLIST hash2[], char* course, char* room, char* day, char* hour);
+void selectionCRDH(struct CRDHLIST hash1[], struct CRDHLIST hash2[], char* course, char* room, char* day, char* hour) {
 
-	for(int i=0; i<B; i++) {
-		struct  CSG* iterator_csg = HASHTABLE_CSG[i].head;
-		while(iterator_csg!=NULL) {
-			char* a = iterator_csg->StudentId;
-			struct SNAPLIST* snaplist = lookupSNAP(a, "*", "*", "*", HASHTABLE_SNAP);
-			struct SNAP* iterator_snap = snaplist->head;
-			while(iterator_snap!=NULL) {
-				struct CSGNAP* tempcsgnap = createCSGNAP(iterator_csg->Course, iterator_csg->StudentId, iterator_csg->Grade,
-				 iterator_snap->Name, iterator_snap->Address, iterator_snap->Phone);
-				insertCSGNAP(tempcsgnap, HASHTABLE_CSGNAP);
-				iterator_snap = iterator_snap->next;
-			}
-			iterator_csg = iterator_csg->next;
-		}
+	int v=0;
+	struct CRDHLIST* crdhlist1 = lookupCRDH(course, room, day, hour, hash1);
+	printf("looking up in selection %p \n", crdhlist1->head->next);
+	struct CRDH* iterator_crdh = crdhlist1->head;
+	while(iterator_crdh!=NULL) {
+		insertCRDH(iterator_crdh, hash2);
+		iterator_crdh = iterator_crdh->next;
+		printf("\n%p pointer \n", crdhlist1->head->next);
+		v++;
+		printf("\n %d number of times \n", v);
 	}
 
-	printf("\nJOINING CSG AND SNAP\n");
-	printf("Course StudentId Grade Name Address Pho");
-
+	printf("SELECTION OF CRDH for Course = %s, Room = %s, Day = %s, Hour = %s\n", course, room, day, hour);
+	printf("Course Room Day Hour\n");
 	for(int i=0; i<B; i++) {
-		struct CSGNAP* iterator_csgnap = HASHTABLE_CSGNAP[i].head;
-		while(iterator_csgnap!=NULL) {
-			printf("%s %s %s %s %s %s\n", iterator_csgnap->Course, iterator_csgnap->StudentId,
-				iterator_csgnap->Grade, iterator_csgnap->Name, iterator_csgnap->Address, iterator_csgnap->Phone);
-			iterator_csgnap= iterator_csgnap->next;
+		struct CRDH* iterator_crdh = hash2[i].head;
+		while(iterator_crdh!=NULL) {
+			printf("%s %s %s %s\n",iterator_crdh->Course, iterator_crdh->Room, iterator_crdh->Day, iterator_crdh->Hour);
+			iterator_crdh = iterator_crdh->next;
 		}
 	}
 }
+
+void projectionDH(struct CRDHLIST hashin[], struct DHLIST hashout[]);
+void projectionDH(struct CRDHLIST hashin[], struct DHLIST hashout[]) {
+
+	printf("\nPROJECTION OF CRDH ONTO DH\n");
+	printf("Day Hour\n");
+
+	for(int i=0; i<B; i++) {
+		struct CRDH* iterator_crdh = hashin[i].head;
+		while(iterator_crdh!=NULL) {
+			insertDH(createDH(iterator_crdh->Day, iterator_crdh->Hour), hashout);
+			iterator_crdh = iterator_crdh->next;
+		}
+	}
+
+	for(int i=0; i<B; i++) {
+		struct DH* iterator_dh = hashout[i].head;
+		while(iterator_dh!=NULL) {
+			printf("%s %s\n",iterator_dh->Day, iterator_dh->Hour);
+			iterator_dh = iterator_dh->next;
+		}
+	}
+}
+
+
 
 int main() {
 
@@ -1397,8 +1493,10 @@ int main() {
 	struct SNAPLIST hash_snap[B];
 	struct CSGLIST hash_csg[B];
 	struct CSGLIST hash_csg_select[B];
-	struct CSLIST hash_cs[B];
-	struct CSGNAPLIST hash_csgnap[B];
+	struct SLIST hash_s[B];
+	struct CRDHLIST hash_crdh[B];
+	struct CRDHLIST hash_crdh_select[B];
+	struct DHLIST hash_dh[B];
 
 	struct CDHLIST hash_cdh2[B];
 	struct CDHLIST hash_cdh3[B];
@@ -1412,8 +1510,10 @@ int main() {
 		hash_cdh2[i].head=NULL;
 		hash_cdh3[i].head=NULL;
 		hash_csg_select[i].head=NULL;
-		hash_cs[i].head=NULL;
-		hash_csgnap[i].head=NULL;
+		hash_s[i].head=NULL;
+		hash_crdh[i].head=NULL;
+		hash_crdh_select[i].head=NULL;
+		hash_dh[i].head=NULL;
 	}
 
 	struct CSG* csg1 = createCSG("CS101", "12345", "A");
@@ -1430,18 +1530,11 @@ int main() {
 	insertCSG(csg4, hash_csg);
 	insertCSG(csg5, hash_csg);
 	insertCSG(csg6, hash_csg);
-	struct CS* cs1 = createCS("CS101", "123");
-	struct CS* cs2 = createCS("CS101", "124");
-	insertCS(cs1, hash_cs);
-	insertCS(cs2, hash_cs);
-	printf("looking up CS %s\n", lookupCS("*", "*", hash_cs)->head->StudentId);
 
-	printf("Lookingup csg %s\n", lookupCSG("CS101", "*", "A", hash_csg)->head->StudentId);
-	//projection(hash_csg, hash_cs);
+	selection(hash_csg, hash_csg_select, "CS101", "*", "*");
+	projection(hash_csg_select, hash_s);
 
-	//selection(hash_csg, hash_csg_select, "PH100", "*", "C+");
-
-/*	file_make_CSG(hash_csg_select);
+	file_make_CSG(hash_csg_select);
 
 	struct SNAP* snap1 = createSNAP("12345", "C_Brown", "12_Apple_St", "555-1234");
 	struct SNAP* snap2 = createSNAP("67890", "L_Van_Pelt", "34_Pear_Ave", "555-5678");
@@ -1451,8 +1544,7 @@ int main() {
 	insertSNAP(snap2, hash_snap);
 	insertSNAP(snap3, hash_snap);
 	deleteSNAP("22222", "*", "*", "*", hash_snap);
-	printf("Deleted pointer %p\n", lookupSNAP("*", "*", "56_Grape_Blvd", "555-9999", hash_snap)->head);*/
-/*
+
 	file_make_SNAP(hash_snap);
 
 	struct CP* cp1 = createCP("CS101", "CS100");
@@ -1472,10 +1564,9 @@ int main() {
 	insertCP(cp6, hash_cp);
 	insertCP(cp7, hash_cp);
 	insertCP(cp8, hash_cp);
-	deleteCP("CS205","*", hash_cp);
-	printf("deleting CP, %p\n", lookupCP("*","CS101", hash_cp)->head);
-	*/
-	/*file_make_CP(hash_cp);
+	file_make_CP(hash_cp);
+
+	printf("this one %s\n", lookupCP("CS101", "*", hash_cp)->head->Prerequisite);
 
 	struct CDH* cdh1 = createCDH("CS101", "M", "9AM");
 	struct CDH* cdh2 = createCDH("CS101", "W", "9AM");
@@ -1489,132 +1580,27 @@ int main() {
 	insertCDH(cdh3, hash_cdh);
 	insertCDH(cdh4, hash_cdh);
 	insertCDH(cdh5, hash_cdh);
-	insertCDH(cdh6, hash_cdh);*/
+	insertCDH(cdh6, hash_cdh);
 
-	//deleteCDH("*", "*", "*", hash_cdh);
+	file_make_CDH(hash_cdh);
 
-	//lookupCDH("*","W","*", hash_cdh);
-
-	//printf("%s %s lookup \n", lookupCDH("*","W","*", hash_cdh)->head->Day, lookupCDH("*","W","*",hash_cdh)->head->next->Day);
-
-	//file_make_CDH(hash_cdh);
-/*
 	struct CR* cr1 = createCR("CS101", "Turing_Aud");
-	struct CR* cr4 = createCR("CS101", "Newton_Lab");
-	struct CR* cr5 = createCR("CS101", "def");
-	struct CR* cr2 = createCR("EE200", "Newton_Lab");
+	struct CR* cr2 = createCR("EE200", "25_Ohm_Hall");
 	struct CR* cr3 = createCR("PH100", "Newton_Lab");
 
 	insertCR(cr1, hash_cr);
 	insertCR(cr2, hash_cr);
 	insertCR(cr3, hash_cr);
-	insertCR(cr4, hash_cr);
-	insertCR(cr5, hash_cr);
 
-	//printf("looking up %s \n", lookupCDH("*", "W", "*", hash_cdh)->head->Course);
-	deleteCR("EE200", "Newton_Lab", hash_cr);
-	printf("Helloo deleted item pointer %p\n", lookupCR("*","Newton_Lab", hash_cr)->head);
-	//file_make_CR(hash_cr);
-*/
-	//grade_lookup("C_Brown", "EE200", hash_snap, hash_csg);
-	//location_lookup("C_Brown", "9AM", "M", hash_snap, hash_csg, hash_cdh, hash_cr);
+	file_make_CR(hash_cr);
 
-	//join(hash_csg, hash_snap, hash_csgnap);
-
-	/*struct CDH* cdh = createCDH("CS171", "M", "1AM");
-	insertCDH(cdh);
-	struct CDH* cdh2 = createCDH("CS171", "T", "2AM");
-	insertCDH(cdh2);
-	struct CDH* cdh3 = createCDH("CS173", "W", "3AM");
-	insertCDH(cdh3);
-	struct CDH* cdh4 = createCDH("CS173", "TH", "4AM");
-	insertCDH(cdh4);
-	struct CDH* cdh5 = createCDH("CS163", "FI", "78AM");
-	insertCDH(cdh5);
-	printf("%s\n", lookupCDH("CS173", "TH", "*")->head->Hour);
-	deleteCDH(cdh5);
-	printf("%p\n", lookupCDH("163", "FI", "*")->head);
-	deleteCDH(cdh3);
-		printf("%s\n", lookupCDH("CS173", "*", "*")->head->Hour);
+	grade_lookup("C_Brown", "EE200", hash_snap, hash_csg);
+	location_lookup("C_Brown", "9AM", "M", hash_snap, hash_csg, hash_cdh, hash_cr);
 
 
-	//struct CP* cp = createCP("CS101", "CS100");
-	//insertCP(cp);
-	//struct CP* cp2 = createCP("CS101", "CS102");
-	//insertCP(cp2);
-	//struct CP* cp3 = createCP("CS101", "CS99");
-	//struct CP* cp4 = createCP("CS101", "CS88");
-	//insertCP(cp3);
-	//insertCP(cp4);
+	join(hash_cr, hash_cdh, hash_crdh);
 
-	//insertCP(cp4);
-	int hash = hc("CS101");
-	//printf("CS102 is %s\n", HASHTABLE_CP[hash].head->next->Prerequisite);
-	//printf("helo%s\n", lookupCP("CS101", "*")->head->next->Prerequisite);
-	//deleteCP(cp);
-	//printf("somthaf\n");
-	//deleteCP(cp4);
-	//printf("%s %s %sabcd\n", lookupCP("CS101", "*")->head->Prerequisite,
-	//	lookupCP("CS101", "*")->head->next->Prerequisite,
-	//	lookupCP("CS101", "*")->head->next->next->Prerequisite);
-	//printf("%s %s %sxyz\n", HASHTABLE_CP[hash].head->Prerequisite,
-	//	HASHTABLE_CP[hash].head->next->Prerequisite,
-	//	HASHTABLE_CP[hash].head->next->next->Prerequisite);
-	//printf("CS102 is %s\n", HASHTABLE_CP[hash].head->Prerequisite);
-
-	hash = hc("CS173");
-
-	struct CDH* cdh = createCDH("CS171", "M", "1AM");
-	insertCDH(cdh, hash_cdh);
-	struct CDH* cdh2 = createCDH("CS171", "T", "2AM");
-	insertCDH(cdh2, hash_cdh);
-	struct CDH* cdh3 = createCDH("CS173", "W", "3AM");
-	insertCDH(cdh3, hash_cdh);
-	deleteCDH(cdh3, hash_cdh);
-	struct CDH* cdh9 = createCDH("CS173", "W", "3AM");
-	insertCDH(cdh9, hash_cdh);
-	deleteCDH(cdh9, hash_cdh);
-	//printf("point is %p \n", lookupCDH("CS173", "W", "3AM")->head);
-	//printf("looking up %p", lookupCDH("CS173", "W", "3AM")->head);
-	//struct CDH* cdh4 = createCDH("CS173", "TH", "4AM");
-	//insertCDH(cdh4);
-	//struct CDH* cdh5 = createCDH("CS173", "FI", "78AM");
-	//nsertCDH(cdh5);
-	//deleteCDH(cdh5);
-	insertSNAP(createSNAP("a","b","c","d"), hash_snap);
-	//deleteSNAP(createSNAP("a","b","c","d"));
-	//printf("ok123\n");
-	//printf("first snap %s \n", HASHTABLE_SNAP[hc("a")].head->StudentId);
-	//printf("%s %sxyz\n", HASHTABLE_CDH[hash].head->Hour,
-	//	HASHTABLE_CDH[hash].head->next->Hour);
-	char* abc = "1";
-	//printf("is it equal %d %d \n", *abc-'0','*');
-	//struct CDH* test = lookupCDH("CSC171")->head->next;
-	//printf(" NOW NOW %s \n", HASHTABLE_CDH[h(*"CSC172")].head->next->next->Course);
-	//printf("%s\n", test->next->Day);
-	//printf("is it in %s\n", lookupCDH("CS173", "W", "3AM")->head->Day);
-	printf("here1 \n");
-	//file_make_CDH();
-	printf("here2 \n");
-	//file_read_CDH();
-	printf("here3 \n");
-	//file_make_CDH();
-	//printf("point is %p \n", lookupCDH("CS173", "W", "3AM", hash_cdh)->head->next);
-	//printf("Finally %s \n", HASHTABLE_CDH[hc("CS171")].head->next->Course);
-	//struct CDH* cdh6 = createCDH("CS162", "FadI", "78safdAM");
-	//insertCDH(cdh6);
-	//file_read_CDH();
-	file_make_CDH(hash_cdh);
-	struct CP* cp1 = createCP("CS12","ROOM1020");
-	struct CP* cp2 = createCP("CS13","ROOM1011");
-	struct CP* cp3 = createCP("CS12","ROOM1010");
-	insertCP(cp1,hash_cp);
-	insertCP(cp2,hash_cp);
-	//deleteCP(cp1,hash_cp);
-	insertCP(cp3,hash_cp);
-	file_make_CP(hash_cp);
-	file_read_CP(hash_cp);
-	file_make_CP(hash_cp);*/
+	selectionCRDH(hash_crdh, hash_crdh_select, "*", "Turing_Aud", "*", "*");
 
 	return 0;
 

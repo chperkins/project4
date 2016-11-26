@@ -1,1 +1,4 @@
 Course Student Grade
+CS101 12345 A
+CS101 67890 B
+CS101 33333 A-
