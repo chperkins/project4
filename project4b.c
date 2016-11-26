@@ -1310,22 +1310,18 @@ struct CRDHLIST* lookupCRDH(char* Course, char* Room, char* Day, char* Hour, str
 void insertCRDH(struct CRDH* crdh, struct CRDHLIST HASHTABLE_CRDH[]);
 void insertCRDH(struct CRDH* crdh, struct CRDHLIST HASHTABLE_CRDH[]) {
 
-	if(lookupCRDH(crdh->Course,crdh->Room, crdh->Day, crdh->Hour, HASHTABLE_CRDH)->head==NULL) {
-		printf("success\n");
+	if(lookupCRDH(crdh->Course, crdh->Room, crdh->Day, crdh->Hour, HASHTABLE_CRDH)->head==NULL) {
+
 		int hash = hc(crdh->Course);
 		if (HASHTABLE_CRDH[hash].head != NULL) {
-			struct CRDH* temp_CRDH = HASHTABLE_CRDH[hash].head;
+			struct CRDH* temp_crdh = HASHTABLE_CRDH[hash].head;
 			HASHTABLE_CRDH[hash].head = crdh;
-			crdh->next = temp_CRDH;
+			crdh->next = temp_crdh;
 		}
 		else {
 			HASHTABLE_CRDH[hash].head = crdh;
 			HASHTABLE_CRDH[hash].head->next = NULL;
 		}
-	}
-
-	else {
-		printf("oops\n");
 	}
 }
 
@@ -1441,10 +1437,19 @@ void selectionCRDH(struct CRDHLIST hash1[], struct CRDHLIST hash2[], char* cours
 	struct CRDHLIST* crdhlist1 = lookupCRDH(course, room, day, hour, hash1);
 	printf("looking up in selection %p \n", crdhlist1->head->next);
 	struct CRDH* iterator_crdh = crdhlist1->head;
+	printf("lookiing up again %p \n", iterator_crdh->next);
 	while(iterator_crdh!=NULL) {
-		insertCRDH(iterator_crdh, hash2);
+		printf("lookiing up 3 %p \n", iterator_crdh->next);	
+		struct CRDH* temp_crdh = (struct CRDH*) malloc (sizeof(struct CRDH));
+		temp_crdh->Course = iterator_crdh->Course;
+		temp_crdh->Day = iterator_crdh->Day;
+		temp_crdh->Hour = iterator_crdh->Hour;
+		temp_crdh->Room = iterator_crdh->Room;	
+		insertCRDH(temp_crdh, hash2);
+		printf("lookiing up 4 %p \n", iterator_crdh->next);
 		iterator_crdh = iterator_crdh->next;
-		printf("\n%p pointer \n", crdhlist1->head->next);
+		//printf("lookiing up 4 %p \n", iterator_crdh->next);
+		printf("\n%p pointer \n", iterator_crdh);
 		v++;
 		printf("\n %d number of times \n", v);
 	}
