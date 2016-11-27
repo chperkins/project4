@@ -1039,16 +1039,19 @@ void grade_lookup(char* name, char* course, struct SNAPLIST HASHTABLE_SNAP[], st
 	
 	struct SNAPLIST* namesearch = lookupSNAP("*",name,"*","*",HASHTABLE_SNAP);
 	struct SNAP* iterator_snap = namesearch->head;
+	bool lookup = false;
 	while(iterator_snap!=NULL) {
 		char* i = iterator_snap->StudentId;
 		struct CSGLIST* temp_grades = lookupCSG(course,i,"*", HASHTABLE_CSG);
 		struct CSG* iterator_csg = temp_grades->head;
 		while(iterator_csg!=NULL) {
 			printf("%s got the grade %s in %s.\n", name, iterator_csg->Grade, course);
+			lookup = true;
 			iterator_csg = iterator_csg->next;
 		}
 		iterator_snap = iterator_snap->next;
 	}
+	if (lookup == false) printf("Lookup for %s in %s not found\n", name, course);
 }
 
 void location_lookup(char* name, char* hour, char* day, struct SNAPLIST HASHTABLE_SNAP[], struct CSGLIST HASHTABLE_CSG[], struct CDHLIST HASHTABLE_CDH[], struct CRLIST HASHTABLE_CR[]);
@@ -1056,6 +1059,7 @@ void location_lookup(char* name, char* hour, char* day, struct SNAPLIST HASHTABL
 	//printf("starting \n");
 	struct SNAPLIST* namesearch = lookupSNAP("*",name,"*","*",HASHTABLE_SNAP);
 	struct SNAP* iterator_snap = namesearch->head;
+	bool lookup = false;
 	while(iterator_snap!=NULL) {
 		char* i = iterator_snap->StudentId;
 		struct CSGLIST* temp_courses = lookupCSG("*",i,"*", HASHTABLE_CSG);
@@ -1068,6 +1072,7 @@ void location_lookup(char* name, char* hour, char* day, struct SNAPLIST HASHTABL
 				struct CRLIST* temp_rooms = lookupCR(iterator_cdh->Course, "*", HASHTABLE_CR);
 				struct CR* iterator_cr = temp_rooms->head;
 				while(iterator_cr!=NULL) {
+					lookup=true;
 					printf("%s is in the room %s at %s on %s.\n", name, iterator_cr->Room, hour, day);
 					iterator_cr = iterator_cr->next;
 				}
@@ -1077,6 +1082,7 @@ void location_lookup(char* name, char* hour, char* day, struct SNAPLIST HASHTABL
 		}
 		iterator_snap = iterator_snap->next;
 	}
+	if (!lookup)printf("%s doesn't have class on %s at %s\n", name, day, hour);
 }
 //-----------MAIN METHOD IMPLEMENTATION---------------//
 
@@ -1530,16 +1536,18 @@ int main() {
 	printf("Part 2\n");
 	char name[100];
 	char class[100];
-	printf("For grade_lookup, please input the name and then the class (press enter after each):\n");
-	scanf("%s", name);
-	scanf("%s", class);
+	char achar[2];
+	printf("For grade_lookup, please input the name and then the class (press enter after each)\n All names use '_' instead of spaces. (for example, C. Brown should be input as C_Brown):\n");
+	scanf("%[^\n]s",name);
+	scanf("%c", achar);
+	scanf("%[^\n]s",class);
 	grade_lookup(name, class, hash_snap, hash_csg);
 	printf("\n");
 
 	char name2[100];
 	char hour[100];
 	char day[100];
-	printf("For location_lookup, please input the name, the hour, and then the day.\n");
+	printf("For location_lookup, please input the name of the student (using previous notation), the hour, and then the day.\n");
 	scanf("%s", name2);
 	scanf("%s", hour);
 	scanf("%s", day);
