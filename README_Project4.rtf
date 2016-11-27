@@ -1,0 +1,33 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1348\cocoasubrtf170
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww17120\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs24 \cf0 README\
+Project 4\
+Creating a Database in C\
+CSC 173\
+Lilian Ludford, Charlie Perkins\
+\
+To Run:\
+
+\fs36 gcc -o pr project4b.c\
+./pr\
+Follow the directions\
+
+\fs24 \
+Part 1)\
+We created lookup, insert and delete functions for each of the tables described in the readings. Each table had it\'92s own Hashtable using a hash function of mod 1009. Each hashtable was made up of lists of each struct. For example, the SNAP table was a hashtable where each bucket contained a linked list of SNAP tuples; the CP table is a hashtable where each bucket contains a linked list of CP tuples..etc. To insert, we always inserted the new tuple into the \'93head\'94 or top of the linked list in the bucket (whether there was a collision or). To lookup, if a key was specified, then we would hash the key and find the bucket and iterate through the linked list of tuples with the same key (if there was more than one). For example, in the CSG table, the course was used as a key; however there are more than one tuples with the same course. So, in order to find the correct tuple, we would iterate through the list of the tuples each with that course and then find the correct tuple which matched the other specifications for StudentId and Grade. If nothing was specified, then we would simply add everything in the table into the list to return. The delete function worked similarly to the lookup function. If a key was specified, it would hash the key and find the bucket, then filter down the results to delete by the other specifications. Otherwise, it would iterate through everything to find the the bucket to delete. \
+We saved the input into a textile with the tables specified in the book. Our program reads in the tables as it looks up, inserts, and deletes. At the end of the program, our program creates an output textfile which reflects the changes after the program is run.\
+\
+Part 2)\
+In this part, we designed a function to, on Name and Course input, return the grade that student received in the course. This method is called \'93grade_lookup()\'94 in our code. First, we used the SNAP lookup to get the studentID with the name. Then, we lookedup the course and grade using the CSG lookup. If the combination of Name and Course returns a grade, then it prints the grade. Otherwise, it says that the lookup is not found.\
+In part b, we designed a method to print what room a student is in at a given time. The user inputs the student name and a time of day and the weekday. Then, the program uses SNAP lookup to find the StudentID, then uses the CSG lookup to find the courses the student is in, then uses the CDH lookup to find the day and hour, and finally, uses the CR lookup to find the room at the correct Day and Hour. If this combination specified returns a room, then it prints the room. Otherwise, it says the lookup is not found.\
+\
+Part 3)\
+In this part, we created methods to Union two CDH tables, find the intersection of two CDH tables, find the difference of two CDH tables, as well as complete the Selection method for CSG tables, as well as a selection method for CRDH table and a join method for joining CR and CDH tables and a projectionDH method which takes in a CRDH table and turns it into a DH table. For the projection method, we went through the whole table and created a new table only containing the Day and Hour (as opposed to the original, Course Room, Day Hour). For the selection methods, it was pretty similar to our lookup methods. Here, we would lookup the specified course, room, day and hour then we would iterate through the returned lookup method and print out all of the table rows that were returned from the lookup. For the Join method, we iterated through the given CR table and CDH table and created a new table row on each iteration which corresponded to the given Course, room, day and hour. Then, we iterated through the new table and printed the results.\
+For the unionize method, we  took in two CDH tables, then inserted each table row into a new CDH table. This eliminated duplicates.\
+For the intersection method, we took in two CDH tables, then added in the table rows (into a new table) that were the same in both tables.\
+Finally, in the difference method, we took in two CDH tables, then iterated through\'97if the table row was unique to one of the hash tables, then it was added to the new table.\
+}
