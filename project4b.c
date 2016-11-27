@@ -1520,7 +1520,7 @@ int main() {
 		hash_dh[i].head=NULL;
 	}
 
-	printf("\n-------Project 4 - Charlie Perkins and Lillian Ludford-------\n");
+	printf("\n-------Project 4 - Charlie Perkins and Lilian Ludford-------\n");
 	printf("\nThis program loads items into each table through the ***_table_in.txt files.\n");
 	printf("They are set by default to have the defaults from the book,\nbut they can be modified.\n");
 	printf("The project will show parts 2 and 3 first and 1 last\n so that we can demonstrate the delete function.\n\n");
@@ -1537,7 +1537,7 @@ int main() {
 	char name[100];
 	char class[100];
 	char achar[2];
-	printf("For grade_lookup, please input the name and then the class (press enter after each)\n All names use '_' instead of spaces. (for example, C. Brown should be input as C_Brown):\n");
+	printf("For grade_lookup, please input the name and then the class (press enter after each)\n All names use '_' instead of spaces. (for example, C. Brown should be input as C_Brown)\n You may also use an asterisk:\n");
 	scanf("%[^\n]s",name);
 	scanf("%c", achar);
 	scanf("%[^\n]s",class);
